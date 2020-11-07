@@ -24,12 +24,20 @@
 <span id="21">21</span>
 <span id="22">22</span>
 <span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">rust_2018_idioms</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">lazy_static</span>;
+
+<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_derive</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">alert</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">application_data</span>;
@@ -38,6 +46,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">client_certificate_type</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">compression_methods</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">config</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">conn</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">content</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">crypto</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">curve</span>;
@@ -48,5 +57,6 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prf</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">record_layer</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">signature_hash_algorithm</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">state</span>;
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "dtls";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

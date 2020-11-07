@@ -129,7 +129,7 @@
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_DEADLINE_EXCEEDED</span>: <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;read/write timeout&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_BUFFER_TOO_SMALL</span>: <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;buffer is too small&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_CONTEXT_UNSUPPORTED</span>: <span class="ident">Error</span> <span class="op">=</span>
-        <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;context is not supported for ExportKeyingMaterial&quot;</span>.<span class="ident">to_owned</span>());
+        <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;context is not supported for export_keying_material&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_DTLSPACKET_INVALID_LENGTH</span>: <span class="ident">Error</span> <span class="op">=</span>
         <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;packet is too short&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_HANDSHAKE_IN_PROGRESS</span>: <span class="ident">Error</span> <span class="op">=</span>
@@ -139,7 +139,7 @@
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_INVALID_PACKET_LENGTH</span>: <span class="ident">Error</span> <span class="op">=</span>
         <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;packet length and declared length do not match&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_RESERVED_EXPORT_KEYING_MATERIAL</span>: <span class="ident">Error</span> <span class="op">=</span>
-        <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;ExportKeyingMaterial can not be used with a reserved label&quot;</span>.<span class="ident">to_owned</span>());
+        <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;export_keying_material can not be used with a reserved label&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_CERTIFICATE_VERIFY_NO_CERTIFICATE</span>: <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(
         <span class="string">&quot;client sent certificate verify but we have no certificate to verify&quot;</span>.<span class="ident">to_owned</span>()
     );
