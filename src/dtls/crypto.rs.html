@@ -267,6 +267,11 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">crypto_test</span>;
@@ -286,6 +291,11 @@
 <span class="kw">use</span> <span class="ident">rsa</span>::<span class="ident">PublicKey</span>;
 <span class="kw">use</span> <span class="ident">sha2</span>::{<span class="ident">Digest</span>, <span class="ident">Sha256</span>};
 <span class="kw">use</span> <span class="ident">signature</span>::{<span class="ident">Signature</span>, <span class="ident">Verifier</span>};
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Certificate</span> {
+    <span class="kw">pub</span> <span class="ident">certificate</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">private_key</span>: <span class="ident">CryptoPrivateKey</span>,
+}
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">value_key_message</span>(
     <span class="ident">client_random</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
@@ -307,7 +317,7 @@
     <span class="ident">plaintext</span>
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">CryptoPrivateKey</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">CryptoPrivateKey</span> {
     <span class="ident">ED25519</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ed25519</span>::<span class="ident">signature</span>::<span class="ident">Signer</span><span class="op">&lt;</span><span class="ident">ed25519</span>::<span class="ident">Signature</span><span class="op">&gt;</span><span class="op">&gt;</span>),
     <span class="ident">ECDSA256</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">p256</span>::<span class="ident">ecdsa</span>::<span class="ident">signature</span>::<span class="ident">Signer</span><span class="op">&lt;</span><span class="ident">p256</span>::<span class="ident">ecdsa</span>::<span class="ident">Signature</span><span class="op">&gt;</span><span class="op">&gt;</span>),
     <span class="ident">RSA256</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">rsa</span>::<span class="ident">RSAPrivateKey</span><span class="op">&gt;</span>),

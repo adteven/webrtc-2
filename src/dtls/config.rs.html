@@ -158,13 +158,12 @@
 <span id="155">155</span>
 <span id="156">156</span>
 <span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cipher_suite</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">crypto</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">errors</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extension</span>::<span class="ident">extension_use_srtp</span>::<span class="ident">SRTPProtectionProfile</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">signature_hash_algorithm</span>::<span class="ident">SignatureScheme</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Duration</span>;
 
@@ -176,16 +175,16 @@
     <span class="comment">// Certificates contains certificate chain to present to the other side of the connection.</span>
     <span class="comment">// Server MUST set this if psk is non-nil</span>
     <span class="comment">// client SHOULD sets this so CertificateRequests can be handled if psk is non-nil</span>
-    <span class="comment">//TODO: Certificates []tls.Certificate</span>
+    <span class="ident">certificates</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Certificate</span><span class="op">&gt;</span>,
 
     <span class="comment">// cipher_suites is a list of supported cipher suites.</span>
     <span class="comment">// If cipher_suites is nil, a default list is used</span>
     <span class="ident">cipher_suites</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CipherSuiteID</span><span class="op">&gt;</span>,
 
     <span class="comment">// SignatureSchemes contains the signature and hash schemes that the peer requests to verify.</span>
-    <span class="comment">//TODO: SignatureSchemes: []tls.SignatureScheme</span>
+    <span class="ident">signature_schemes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SignatureScheme</span><span class="op">&gt;</span>,
 
-    <span class="comment">// srtpprotection_profiles are the supported protection profiles</span>
+    <span class="comment">// srtp_protection_profiles are the supported protection profiles</span>
     <span class="comment">// Clients will send this via use_srtp and assert that the server properly responds</span>
     <span class="comment">// Servers will assert that clients send one of these profiles and will respond as needed</span>
     <span class="ident">srtp_protection_profiles</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SRTPProtectionProfile</span><span class="op">&gt;</span>,
@@ -222,7 +221,7 @@
     <span class="comment">// VerifyPeerCertificate, if not nil, is called after normal</span>
     <span class="comment">// certificate verification by either a client or server. It</span>
     <span class="comment">// receives the certificate provided by the peer and also a flag</span>
-    <span class="comment">// that tells if normal verification has succeedded. If it returns a</span>
+    <span class="comment">// that tells if normal verification has succeeded. If it returns a</span>
     <span class="comment">// non-nil error, the handshake is aborted and that error results.</span>
     <span class="comment">//</span>
     <span class="comment">// If normal verification fails then the handshake will abort before</span>
@@ -293,26 +292,21 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">validate_config</span>(<span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-    <span class="comment">//TODO: if config.Certificates.len() &gt; 0 &amp;&amp; config.psk != nil:</span>
-    <span class="comment">//	return ErrPSKAndCertificate</span>
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">config</span>.<span class="ident">certificates</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="ident">config</span>.<span class="ident">psk</span>.<span class="ident">is_some</span>() {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ERR_PSK_AND_CERTIFICATE</span>.<span class="ident">clone</span>());
+    }
 
     <span class="kw">if</span> <span class="op">!</span><span class="ident">config</span>.<span class="ident">psk_identity_hint</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="ident">config</span>.<span class="ident">psk</span>.<span class="ident">is_none</span>() {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ERR_IDENTITY_NO_PSK</span>.<span class="ident">clone</span>());
     }
 
-    <span class="comment">/*TODO: for _, cert := range config.Certificates {
-        if cert.Certificate == nil {
-            return errInvalidCertificate
+    <span class="kw">for</span> <span class="ident">cert</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">certificates</span> {
+        <span class="kw">match</span> <span class="ident">cert</span>.<span class="ident">private_key</span> {
+            <span class="ident">CryptoPrivateKey</span>::<span class="ident">ED25519</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
+            <span class="ident">CryptoPrivateKey</span>::<span class="ident">ECDSA256</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ERR_INVALID_PRIVATE_KEY</span>.<span class="ident">clone</span>()),
         }
-        if cert.PrivateKey != nil {
-            switch cert.PrivateKey.(type) {
-            case ed25519.PrivateKey:
-            case *ecdsa.PrivateKey:
-            default:
-                return errInvalidPrivateKey
-            }
-        }
-    }*/</span>
+    }
 
     <span class="ident">parse_cipher_suites</span>(
         <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">cipher_suites</span>,
