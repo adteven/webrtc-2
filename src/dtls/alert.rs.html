@@ -194,7 +194,7 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">content</span>::<span class="kw-2">*</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">enum</span> <span class="ident">AlertLevel</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">AlertLevel</span> {
     <span class="ident">Warning</span> <span class="op">=</span> <span class="number">1</span>,
     <span class="ident">Fatal</span> <span class="op">=</span> <span class="number">2</span>,
     <span class="ident">Invalid</span>,
@@ -221,7 +221,7 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">enum</span> <span class="ident">AlertDescription</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">AlertDescription</span> {
     <span class="ident">CloseNotify</span> <span class="op">=</span> <span class="number">0</span>,
     <span class="ident">UnexpectedMessage</span> <span class="op">=</span> <span class="number">10</span>,
     <span class="ident">BadRecordMac</span> <span class="op">=</span> <span class="number">20</span>,
