@@ -143,11 +143,11 @@
 <span class="comment">// Structure supports ECDH and PSK</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HandshakeMessageServerKeyExchange</span> {
-    <span class="ident">identity_hint</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">identity_hint</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 
     <span class="ident">elliptic_curve_type</span>: <span class="ident">EllipticCurveType</span>,
-    <span class="ident">named_curve</span>: <span class="ident">NamedCurve</span>,
-    <span class="ident">public_key</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">named_curve</span>: <span class="ident">NamedCurve</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">public_key</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
     <span class="ident">hash_algorithm</span>: <span class="ident">HashAlgorithm</span>,
     <span class="ident">signature_algorithm</span>: <span class="ident">SignatureAlgorithm</span>,
     <span class="ident">signature</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,

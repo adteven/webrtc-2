@@ -153,7 +153,7 @@
         <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;client sent certificate but did not verify it&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_CLIENT_CERTIFICATE_REQUIRED</span>: <span class="ident">Error</span> <span class="op">=</span>
         <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;server required client verification, but got none&quot;</span>.<span class="ident">to_owned</span>());
-    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_CLIENT_NO_MATCHING_SRTPPROFILE</span>: <span class="ident">Error</span> <span class="op">=</span>
+    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_CLIENT_NO_MATCHING_SRTP_PROFILE</span>: <span class="ident">Error</span> <span class="op">=</span>
         <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;server responded with SRTP Profile we do not support&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_CLIENT_REQUIRED_BUT_NO_SERVER_EMS</span>: <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(
         <span class="string">&quot;client required Extended Master Secret extension, but server does not support it&quot;</span>
@@ -213,7 +213,7 @@
         <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;Certificate and PSK provided&quot;</span>.<span class="ident">to_owned</span>());
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_PSK_AND_IDENTITY_MUST_BE_SET_FOR_CLIENT</span>: <span class="ident">Error</span> <span class="op">=</span>
         <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;PSK and PSK Identity Hint must both be set for client&quot;</span>.<span class="ident">to_owned</span>());
-    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_REQUESTED_BUT_NO_SRTPEXTENSION</span>: <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(
+    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_REQUESTED_BUT_NO_SRTP_EXTENSION</span>: <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(
         <span class="string">&quot;SRTP support was requested but server did not respond with use_srtp extension&quot;</span>.<span class="ident">to_owned</span>()
     );
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">ERR_SERVER_MUST_HAVE_CERTIFICATE</span>: <span class="ident">Error</span> <span class="op">=</span>

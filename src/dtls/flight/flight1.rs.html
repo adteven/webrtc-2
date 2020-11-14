@@ -180,11 +180,9 @@
 <span id="177">177</span>
 <span id="178">178</span>
 <span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-<span class="comment">//use crate::compression_methods::*;</span>
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">compression_methods</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">config</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">conn</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">content</span>::<span class="kw-2">*</span>;
@@ -195,7 +193,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extension</span>::<span class="ident">extension_supported_point_formats</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extension</span>::<span class="ident">extension_supported_signature_algorithms</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extension</span>::<span class="ident">extension_use_extended_master_secret</span>::<span class="kw-2">*</span>;
-<span class="comment">//use crate::extension::extension_use_srtp::*;</span>
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extension</span>::<span class="ident">extension_use_srtp</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extension</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handshake</span>::<span class="ident">handshake_header</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">handshake</span>::<span class="ident">handshake_message_client_hello</span>::<span class="kw-2">*</span>;
@@ -205,8 +203,6 @@
 
 <span class="kw">use</span> <span class="ident">util</span>::<span class="ident">Error</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">compression_methods</span>::<span class="ident">default_compression_methods</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">extension</span>::<span class="ident">extension_use_srtp</span>::<span class="ident">ExtensionUseSRTP</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight1parse</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
