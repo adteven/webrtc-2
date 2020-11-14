@@ -294,36 +294,36 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">AtomicU16</span>, <span class="ident">Ordering</span>};
 
 <span class="comment">// State holds the dtls connection state and implements both encoding.BinaryMarshaler and encoding.BinaryUnmarshaler</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">State</span> {
-    <span class="ident">local_epoch</span>: <span class="ident">AtomicU16</span>,
-    <span class="ident">remote_epoch</span>: <span class="ident">AtomicU16</span>,
-    <span class="ident">local_sequence_number</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>, <span class="comment">// uint48</span>
-    <span class="ident">local_random</span>: <span class="ident">HandshakeRandom</span>,
-    <span class="ident">remote_random</span>: <span class="ident">HandshakeRandom</span>,
-    <span class="ident">master_secret</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-    <span class="ident">cipher_suite</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="comment">// nil if a cipher_suite hasn&#39;t been chosen</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">State</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">local_epoch</span>: <span class="ident">AtomicU16</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">remote_epoch</span>: <span class="ident">AtomicU16</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">local_sequence_number</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>, <span class="comment">// uint48</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">local_random</span>: <span class="ident">HandshakeRandom</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">remote_random</span>: <span class="ident">HandshakeRandom</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">master_secret</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">cipher_suite</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="comment">// nil if a cipher_suite hasn&#39;t been chosen</span>
 
-    <span class="ident">srtp_protection_profile</span>: <span class="ident">SRTPProtectionProfile</span>, <span class="comment">// Negotiated srtpprotection_profile</span>
-    <span class="ident">peer_certificates</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">srtp_protection_profile</span>: <span class="ident">SRTPProtectionProfile</span>, <span class="comment">// Negotiated srtpprotection_profile</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">peer_certificates</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
-    <span class="ident">is_client</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">is_client</span>: <span class="ident">bool</span>,
 
-    <span class="ident">pre_master_secret</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-    <span class="ident">extended_master_secret</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">pre_master_secret</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">extended_master_secret</span>: <span class="ident">bool</span>,
 
-    <span class="ident">named_curve</span>: <span class="ident">NamedCurve</span>,
-    <span class="ident">local_keypair</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NamedCurveKeypair</span><span class="op">&gt;</span>,
-    <span class="ident">cookie</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-    <span class="ident">handshake_send_sequence</span>: <span class="ident">isize</span>,
-    <span class="ident">handshake_recv_sequence</span>: <span class="ident">isize</span>,
-    <span class="ident">server_name</span>: <span class="ident">String</span>,
-    <span class="ident">remote_requested_certificate</span>: <span class="ident">bool</span>, <span class="comment">// Did we get a CertificateRequest</span>
-    <span class="ident">local_certificates_verify</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="comment">// cache CertificateVerify</span>
-    <span class="ident">local_verify_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,         <span class="comment">// cached VerifyData</span>
-    <span class="ident">local_key_signature</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,       <span class="comment">// cached keySignature</span>
-    <span class="ident">peer_certificates_verified</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">named_curve</span>: <span class="ident">NamedCurve</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">local_keypair</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NamedCurveKeypair</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">cookie</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">handshake_send_sequence</span>: <span class="ident">isize</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">handshake_recv_sequence</span>: <span class="ident">isize</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">server_name</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">remote_requested_certificate</span>: <span class="ident">bool</span>, <span class="comment">// Did we get a CertificateRequest</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">local_certificates_verify</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="comment">// cache CertificateVerify</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">local_verify_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,         <span class="comment">// cached VerifyData</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">local_key_signature</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,       <span class="comment">// cached keySignature</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">peer_certificates_verified</span>: <span class="ident">bool</span>,
 
-    <span class="ident">replay_detector</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ReplayDetector</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">replay_detector</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ReplayDetector</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>

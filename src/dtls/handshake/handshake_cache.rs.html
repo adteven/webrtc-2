@@ -266,10 +266,10 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">HandshakeCachePullRule</span> {
-    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>,
-    <span class="ident">epoch</span>: <span class="ident">u16</span>,
-    <span class="ident">is_client</span>: <span class="ident">bool</span>,
-    <span class="ident">optional</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">typ</span>: <span class="ident">HandshakeType</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">epoch</span>: <span class="ident">u16</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">is_client</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">optional</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">HandshakeCache</span> {

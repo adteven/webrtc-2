@@ -328,8 +328,8 @@
 <span class="comment">// https://tools.ietf.org/html/rfc5246#section-7.2</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Alert</span> {
-    <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>,
-    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Alert</span> {
