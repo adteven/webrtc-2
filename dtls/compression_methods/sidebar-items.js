@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["CompressionMethodId",""]],"struct":[["CompressionMethods",""]]});
+initSidebarItems({"enum":[["CompressionMethodId",""]],"fn":[["default_compression_methods",""]],"struct":[["CompressionMethods",""]]});

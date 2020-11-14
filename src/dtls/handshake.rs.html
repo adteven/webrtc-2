@@ -193,6 +193,12 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">handshake_cache</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">handshake_header</span>;
@@ -286,6 +292,12 @@
     }
 }
 
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">HandshakeType</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">HandshakeType</span>::<span class="ident">Invalid</span>
+    }
+}
+
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">HandshakeMessage</span> {
     <span class="comment">//HelloRequest(errNotImplemented),</span>
@@ -328,8 +340,8 @@
 <span class="comment">// https://tools.ietf.org/html/rfc5246#section-7.3</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Handshake</span> {
-    <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>,
-    <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Handshake</span> {

@@ -112,13 +112,13 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">find_matching_cipher_suite</span>(
-    <span class="ident">a</span>: <span class="kw-2">&amp;</span>[<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span>],
-    <span class="ident">b</span>: <span class="kw-2">&amp;</span>[<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span>],
+    <span class="ident">a</span>: <span class="kw-2">&amp;</span>[<span class="ident">CipherSuiteID</span>],
+    <span class="ident">b</span>: <span class="kw-2">&amp;</span>[<span class="ident">CipherSuiteID</span>],
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CipherSuiteID</span>, ()<span class="op">&gt;</span> {
     <span class="kw">for</span> <span class="ident">a_suite</span> <span class="kw">in</span> <span class="ident">a</span> {
         <span class="kw">for</span> <span class="ident">b_suite</span> <span class="kw">in</span> <span class="ident">b</span> {
-            <span class="kw">if</span> <span class="ident">a_suite</span>.<span class="ident">id</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">b_suite</span>.<span class="ident">id</span>() {
-                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">a_suite</span>.<span class="ident">id</span>());
+            <span class="kw">if</span> <span class="ident">a_suite</span> <span class="op">=</span><span class="op">=</span> <span class="ident">b_suite</span> {
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">a_suite</span>);
             }
         }
     }

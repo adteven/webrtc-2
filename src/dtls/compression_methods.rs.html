@@ -51,6 +51,12 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">util</span>::<span class="ident">Error</span>;
 
@@ -100,6 +106,12 @@
         }
 
         <span class="prelude-val">Ok</span>(<span class="ident">CompressionMethods</span> { <span class="ident">ids</span> })
+    }
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">default_compression_methods</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CompressionMethods</span> {
+    <span class="ident">CompressionMethods</span> {
+        <span class="ident">ids</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">CompressionMethodId</span>::<span class="ident">Null</span>],
     }
 }
 </pre></div>
