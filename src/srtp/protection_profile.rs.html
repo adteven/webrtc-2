@@ -47,7 +47,6 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
-<span id="47">47</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">protection_profile_test</span>;
@@ -56,43 +55,42 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">cipher</span>::<span class="ident">cipher_aes_cm_hmac_sha1</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">util</span>::<span class="ident">Error</span>;
 
-<span class="comment">// ProtectionProfile specifies Cipher and AuthTag details, similar to TLS cipher suite</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProtectionProfile</span>(<span class="ident">u16</span>);
-
-<span class="comment">// Supported protection profiles</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PROTECTION_PROFILE_AES128CM_HMAC_SHA1_80</span>: <span class="ident">ProtectionProfile</span> <span class="op">=</span> <span class="ident">ProtectionProfile</span>(<span class="number">0x0001</span>);
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PROTECTION_PROFILE_AEAD_AES128_GCM</span>: <span class="ident">ProtectionProfile</span> <span class="op">=</span> <span class="ident">ProtectionProfile</span>(<span class="number">0x0007</span>);
+<span class="doccomment">/// ProtectionProfile specifies Cipher and AuthTag details, similar to TLS cipher suite</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u8</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ProtectionProfile</span> {
+    <span class="ident">AES128CMHMACSHA1_80</span> <span class="op">=</span> <span class="number">0x0001</span>,
+    <span class="ident">AEADAES128GCM</span> <span class="op">=</span> <span class="number">0x0007</span>,
+}
 
 <span class="kw">impl</span> <span class="ident">ProtectionProfile</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">key_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">PROTECTION_PROFILE_AES128CM_HMAC_SHA1_80</span> <span class="op">|</span> <span class="ident">PROTECTION_PROFILE_AEAD_AES128_GCM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">16</span>),
-            <span class="ident">p</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;no such ProtectionProfile {}&quot;</span>, <span class="ident">p</span>.<span class="number">0</span>))),
+            <span class="ident">ProtectionProfile</span>::<span class="ident">AES128CMHMACSHA1_80</span> <span class="op">|</span> <span class="ident">ProtectionProfile</span>::<span class="ident">AEADAES128GCM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">16</span>),
         }
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">salt_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">PROTECTION_PROFILE_AES128CM_HMAC_SHA1_80</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">14</span>),
-            <span class="ident">PROTECTION_PROFILE_AEAD_AES128_GCM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">12</span>),
-            <span class="ident">p</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;no such ProtectionProfile {}&quot;</span>, <span class="ident">p</span>.<span class="number">0</span>))),
+            <span class="ident">ProtectionProfile</span>::<span class="ident">AES128CMHMACSHA1_80</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">14</span>),
+
+            <span class="ident">ProtectionProfile</span>::<span class="ident">AEADAES128GCM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">12</span>),
         }
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">auth_tag_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">PROTECTION_PROFILE_AES128CM_HMAC_SHA1_80</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">CIPHER_AES_CM_HMAC_SHA1AUTH_TAG_LEN</span>),
-            <span class="ident">PROTECTION_PROFILE_AEAD_AES128_GCM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">CIPHER_AEAD_AES_GCM_AUTH_TAG_LEN</span>),
-            <span class="ident">p</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;no such ProtectionProfile {}&quot;</span>, <span class="ident">p</span>.<span class="number">0</span>))),
+            <span class="ident">ProtectionProfile</span>::<span class="ident">AES128CMHMACSHA1_80</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">CIPHER_AES_CM_HMAC_SHA1AUTH_TAG_LEN</span>),
+
+            <span class="ident">ProtectionProfile</span>::<span class="ident">AEADAES128GCM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">CIPHER_AEAD_AES_GCM_AUTH_TAG_LEN</span>),
         }
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">auth_key_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">PROTECTION_PROFILE_AES128CM_HMAC_SHA1_80</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">20</span>),
-            <span class="ident">PROTECTION_PROFILE_AEAD_AES128_GCM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>),
-            <span class="ident">p</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;no such ProtectionProfile {}&quot;</span>, <span class="ident">p</span>.<span class="number">0</span>))),
+            <span class="ident">ProtectionProfile</span>::<span class="ident">AES128CMHMACSHA1_80</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">20</span>),
+
+            <span class="ident">ProtectionProfile</span>::<span class="ident">AEADAES128GCM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>),
         }
     }
 }

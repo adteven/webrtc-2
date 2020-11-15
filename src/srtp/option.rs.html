@@ -58,7 +58,7 @@
     <span class="ident">Box</span>::<span class="ident">new</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ReplayDetector</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span> {
         <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">WrappedSlidingWindowDetector</span>::<span class="ident">new</span>(
             <span class="ident">window_size</span>,
-            <span class="ident">MAX_SRTCP_INDEX</span>,
+            <span class="ident">MAX_SRTCP_INDEX</span> <span class="kw">as</span> <span class="ident">u64</span>,
         ))
     })
 }
