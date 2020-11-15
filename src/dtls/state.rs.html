@@ -303,7 +303,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">master_secret</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">cipher_suite</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="comment">// nil if a cipher_suite hasn&#39;t been chosen</span>
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">srtp_protection_profile</span>: <span class="ident">SRTPProtectionProfile</span>, <span class="comment">// Negotiated srtpprotection_profile</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">srtp_protection_profile</span>: <span class="ident">SRTPProtectionProfile</span>, <span class="comment">// Negotiated srtp_protection_profile</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">peer_certificates</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">is_client</span>: <span class="ident">bool</span>,

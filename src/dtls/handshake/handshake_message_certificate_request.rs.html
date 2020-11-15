@@ -99,8 +99,8 @@ server&#39;s Certificate message).
 */</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HandshakeMessageCertificateRequest</span> {
-    <span class="ident">certificate_types</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ClientCertificateType</span><span class="op">&gt;</span>,
-    <span class="ident">signature_hash_algorithms</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SignatureHashAlgorithm</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">certificate_types</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ClientCertificateType</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">signature_hash_algorithms</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SignatureHashAlgorithm</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">const</span> <span class="ident">HANDSHAKE_MESSAGE_CERTIFICATE_REQUEST_MIN_LENGTH</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">5</span>;

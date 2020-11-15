@@ -272,6 +272,27 @@
 <span id="269">269</span>
 <span id="270">270</span>
 <span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">crypto_test</span>;
@@ -290,8 +311,9 @@
 
 <span class="kw">use</span> <span class="ident">rsa</span>::<span class="ident">PublicKey</span>;
 <span class="kw">use</span> <span class="ident">sha2</span>::{<span class="ident">Digest</span>, <span class="ident">Sha256</span>};
-<span class="kw">use</span> <span class="ident">signature</span>::{<span class="ident">Signature</span>, <span class="ident">Verifier</span>};
+<span class="kw">use</span> <span class="ident">signature</span>::{<span class="ident">Signature</span>, <span class="ident">Signer</span>, <span class="ident">Verifier</span>};
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Certificate</span> {
     <span class="kw">pub</span> <span class="ident">certificate</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">private_key</span>: <span class="ident">CryptoPrivateKey</span>,
@@ -318,9 +340,27 @@
 }
 
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">CryptoPrivateKey</span> {
-    <span class="ident">ED25519</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ed25519</span>::<span class="ident">signature</span>::<span class="ident">Signer</span><span class="op">&lt;</span><span class="ident">ed25519</span>::<span class="ident">Signature</span><span class="op">&gt;</span><span class="op">&gt;</span>),
-    <span class="ident">ECDSA256</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">p256</span>::<span class="ident">ecdsa</span>::<span class="ident">signature</span>::<span class="ident">Signer</span><span class="op">&lt;</span><span class="ident">p256</span>::<span class="ident">ecdsa</span>::<span class="ident">Signature</span><span class="op">&gt;</span><span class="op">&gt;</span>),
+    <span class="ident">ED25519</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ed25519_dalek</span>::<span class="ident">Keypair</span><span class="op">&gt;</span>), <span class="comment">//ED25519(Box&lt;dyn ed25519::signature::Signer&lt;ed25519::Signature&gt;&gt;),</span>
+    <span class="ident">ECDSA256</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">p256</span>::<span class="ident">ecdsa</span>::<span class="ident">SigningKey</span><span class="op">&gt;</span>), <span class="comment">//ECDSA256(Box&lt;dyn p256::ecdsa::signature::Signer&lt;p256::ecdsa::Signature&gt;&gt;),</span>
     <span class="ident">RSA256</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">rsa</span>::<span class="ident">RSAPrivateKey</span><span class="op">&gt;</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">CryptoPrivateKey</span> {
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">CryptoPrivateKey</span>::<span class="ident">ED25519</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">to_bytes</span>();
+                <span class="kw">let</span> <span class="ident">keypair</span> <span class="op">=</span> <span class="ident">ed25519_dalek</span>::<span class="ident">Keypair</span>::<span class="ident">from_bytes</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>).<span class="ident">unwrap</span>();
+                <span class="ident">CryptoPrivateKey</span>::<span class="ident">ED25519</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">keypair</span>))
+            }
+            <span class="ident">CryptoPrivateKey</span>::<span class="ident">ECDSA256</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">to_bytes</span>();
+                <span class="kw">let</span> <span class="ident">signing_key</span> <span class="op">=</span> <span class="ident">p256</span>::<span class="ident">ecdsa</span>::<span class="ident">SigningKey</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>).<span class="ident">unwrap</span>();
+                <span class="ident">CryptoPrivateKey</span>::<span class="ident">ECDSA256</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">signing_key</span>))
+            }
+            <span class="ident">CryptoPrivateKey</span>::<span class="ident">RSA256</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CryptoPrivateKey</span>::<span class="ident">RSA256</span>(<span class="ident">p</span>.<span class="ident">clone</span>()),
+        }
+    }
 }
 
 <span class="comment">// If the client provided a &quot;signature_algorithms&quot; extension, then all</span>
@@ -333,10 +373,10 @@
     <span class="ident">server_random</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
     <span class="ident">public_key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
     <span class="ident">named_curve</span>: <span class="ident">NamedCurve</span>,
-    <span class="ident">private_key</span>: <span class="ident">CryptoPrivateKey</span>, <span class="comment">/*, hash_algorithm: HashAlgorithm*/</span>
+    <span class="ident">private_key</span>: <span class="kw-2">&amp;</span><span class="ident">CryptoPrivateKey</span>, <span class="comment">/*, hash_algorithm: HashAlgorithm*/</span>
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">value_key_message</span>(<span class="ident">client_random</span>, <span class="ident">server_random</span>, <span class="ident">public_key</span>, <span class="ident">named_curve</span>);
-    <span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">private_key</span> {
+    <span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">private_key</span> {
         <span class="ident">CryptoPrivateKey</span>::<span class="ident">ED25519</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>.<span class="ident">sign</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>).<span class="ident">to_bytes</span>().<span class="ident">to_vec</span>(),
         <span class="ident">CryptoPrivateKey</span>::<span class="ident">ECDSA256</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>.<span class="ident">sign</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>).<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>(),
         <span class="ident">CryptoPrivateKey</span>::<span class="ident">RSA256</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -523,12 +563,14 @@
     <span class="prelude-val">Ok</span>(<span class="ident">certificate</span>)
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">verify_cert</span>(<span class="ident">raw_certificates</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">verify_cert</span>(
+    <span class="ident">raw_certificates</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">x509_parser</span>::<span class="ident">X509Certificate</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">certificate</span> <span class="op">=</span> <span class="ident">load_certs</span>(<span class="ident">raw_certificates</span>)<span class="question-mark">?</span>;
 
     <span class="ident">certificate</span>.<span class="ident">verify_signature</span>(<span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(())
+    <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">certificate</span>])
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">generate_aead_additional_data</span>(<span class="ident">h</span>: <span class="kw-2">&amp;</span><span class="ident">RecordLayerHeader</span>, <span class="ident">payload_len</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {

@@ -180,7 +180,9 @@
 <span id="177">177</span>
 <span id="178">178</span>
 <span id="179">179</span>
+<span id="180">180</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">flight3</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">compression_methods</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">config</span>::<span class="kw-2">*</span>;
@@ -207,7 +209,7 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight1parse</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
     <span class="comment">/*context.Context,*/</span>
-    <span class="ident">_c</span>: <span class="ident">C</span>,
+    <span class="ident">c</span>: <span class="ident">C</span>,
     <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
     <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
     <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
@@ -242,7 +244,7 @@
     <span class="kw">if</span> <span class="ident">msgs</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>) {
         <span class="comment">// Flight1 and flight2 were skipped.</span>
         <span class="comment">// Parse as flight3.</span>
-        <span class="comment">// TODO: return flight3parse(c, state, cache, cfg);</span>
+        <span class="kw">return</span> <span class="ident">flight3parse</span>(<span class="ident">c</span>, <span class="ident">state</span>, <span class="ident">cache</span>, <span class="ident">cfg</span>).<span class="ident">await</span>;
     }
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">msgs</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">HelloVerifyRequest</span>) {

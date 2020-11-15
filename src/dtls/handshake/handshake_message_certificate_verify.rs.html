@@ -65,9 +65,9 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HandshakeMessageCertificateVerify</span> {
-    <span class="ident">hash_algorithm</span>: <span class="ident">HashAlgorithm</span>,
-    <span class="ident">signature_algorithm</span>: <span class="ident">SignatureAlgorithm</span>,
-    <span class="ident">signature</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">hash_algorithm</span>: <span class="ident">HashAlgorithm</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">signature_algorithm</span>: <span class="ident">SignatureAlgorithm</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">signature</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">const</span> <span class="ident">HANDSHAKE_MESSAGE_CERTIFICATE_VERIFY_MIN_LENGTH</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4</span>;
