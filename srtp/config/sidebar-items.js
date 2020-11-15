@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Config",""],["SessionKeys",""]],"trait":[["KeyingMaterialExporter",""]]});
+initSidebarItems({"struct":[["Config","Config is used to configure a session. You can provide either a KeyingMaterialExporter to export keys or directly pass the keys themselves. After a Config is passed to a session it must not be modified."],["SessionKeys","SessionKeys bundles the keys required to setup an SRTP session"]],"trait":[["KeyingMaterialExporter","KeyingMaterialExporter allows package SRTP to extract keying material"]]});

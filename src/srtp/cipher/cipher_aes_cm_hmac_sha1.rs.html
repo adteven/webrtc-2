@@ -352,6 +352,7 @@
 <span id="349">349</span>
 <span id="350">350</span>
 <span id="351">351</span>
+<span id="352">352</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Cipher</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">context</span>::<span class="kw-2">*</span>;
@@ -374,6 +375,7 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">CIPHER_AES_CM_HMAC_SHA1AUTH_TAG_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10</span>;
 
+<span class="comment">// ToDo: @rainliu whats a use case for srtp_session_auth and srtcp_session_auth</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">CipherAesCmHmacSha1</span> {
     <span class="ident">srtp_session_key</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
     <span class="ident">srtp_session_salt</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,

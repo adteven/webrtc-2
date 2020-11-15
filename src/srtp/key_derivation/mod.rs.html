@@ -88,6 +88,8 @@
 <span id="85">85</span>
 <span id="86">86</span>
 <span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">key_derivation_test</span>;
 
@@ -146,14 +148,16 @@
     <span class="prelude-val">Ok</span>(<span class="ident">out</span>[..<span class="ident">out_len</span>].<span class="ident">to_vec</span>())
 }
 
-<span class="comment">// Generate IV https://tools.ietf.org/html/rfc3711#section-4.1.1</span>
-<span class="comment">// where the 128-bit integer value IV SHALL be defined by the SSRC, the</span>
-<span class="comment">// SRTP packet index i, and the SRTP session salting key k_s, as below.</span>
-<span class="comment">// - roc = a 32-bit unsigned rollover counter (roc), which records how many</span>
-<span class="comment">// -       times the 16-bit RTP sequence number has been reset to zero after</span>
-<span class="comment">// -       passing through 65,535</span>
-<span class="comment">// i = 2^16 * roc + SEQ</span>
-<span class="comment">// IV = (salt*2 ^ 16) | (ssrc*2 ^ 64) | (i*2 ^ 16)</span>
+<span class="doccomment">/// Generate IV https://tools.ietf.org/html/rfc3711#section-4.1.1</span>
+<span class="doccomment">/// where the 128-bit integer value IV SHALL be defined by the SSRC, the</span>
+<span class="doccomment">/// SRTP packet index i, and the SRTP session salting key k_s, as below.</span>
+<span class="doccomment">/// ROC = a 32-bit unsigned rollover counter (roc), which records how many</span>
+<span class="doccomment">/// times the 16-bit RTP sequence number has been reset to zero after</span>
+<span class="doccomment">/// passing through 65,535</span>
+<span class="doccomment">/// ```nobuild</span>
+<span class="doccomment">/// i = 2^16 * roc + SEQ</span>
+<span class="doccomment">/// IV = (salt*2 ^ 16) | (ssrc*2 ^ 64) | (i*2 ^ 16)</span>
+<span class="doccomment">/// ```</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">generate_counter</span>(
     <span class="ident">sequence_number</span>: <span class="ident">u16</span>,
     <span class="ident">rollover_counter</span>: <span class="ident">u32</span>,
