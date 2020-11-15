@@ -270,7 +270,7 @@
 
 <span class="kw">impl</span> <span class="ident">Cipher</span> <span class="kw">for</span> <span class="ident">CipherAeadAesGcm</span> {
     <span class="kw">fn</span> <span class="ident">auth_tag_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        <span class="number">16</span>
+        <span class="ident">CIPHER_AEAD_AES_GCM_AUTH_TAG_LEN</span>
     }
 
     <span class="kw">fn</span> <span class="ident">encrypt_rtp</span>(
