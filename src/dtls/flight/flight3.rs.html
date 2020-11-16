@@ -725,7 +725,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">Flight</span>::<span class="ident">Flight5</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">handle_server_key_exchange</span>(
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">handle_server_key_exchange</span>(
     <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
     <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
     <span class="ident">h</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeMessageServerKeyExchange</span>,
@@ -782,7 +782,7 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight4generate</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight3generate</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
     <span class="ident">_c</span>: <span class="ident">C</span>,
     <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
     <span class="ident">_cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
