@@ -217,13 +217,21 @@
 <span id="214">214</span>
 <span id="215">215</span>
 <span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cipher_suite_tls_ecdhe_ecdsa_with_aes_128_gcm_sha256</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cipher_suite_tls_ecdhe_ecdsa_with_aes_256_cbc_sha</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::{<span class="ident">Send</span>, <span class="ident">Sync</span>};
 
-<span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
+<span class="comment">//use async_trait::async_trait;</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">client_certificate_type</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">errors</span>::<span class="kw-2">*</span>;
@@ -326,17 +334,19 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="comment">//#[async_trait]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CipherSuite</span> {
     <span class="kw">fn</span> <span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>;
     <span class="kw">fn</span> <span class="ident">id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CipherSuiteID</span>;
     <span class="kw">fn</span> <span class="ident">certificate_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ClientCertificateType</span>;
     <span class="kw">fn</span> <span class="ident">hash_func</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CipherSuiteHash</span>;
     <span class="kw">fn</span> <span class="ident">is_psk</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
-    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">is_initialized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
+    <span class="comment">/*async*/</span>
+    <span class="kw">fn</span> <span class="ident">is_initialized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
 
     <span class="comment">// Generate the internal encryption state</span>
-    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">init</span>(
+    <span class="comment">/*async*/</span>
+    <span class="kw">fn</span> <span class="ident">init</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">master_secret</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
         <span class="ident">client_random</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
@@ -344,14 +354,16 @@
         <span class="ident">is_client</span>: <span class="ident">bool</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>;
 
-    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pkt_rlh</span>: <span class="kw-2">&amp;</span><span class="ident">RecordLayerHeader</span>, <span class="ident">raw</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
-    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="comment">/*async*/</span>
+    <span class="kw">fn</span> <span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pkt_rlh</span>: <span class="kw-2">&amp;</span><span class="ident">RecordLayerHeader</span>, <span class="ident">raw</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="comment">/*async*/</span>
+    <span class="kw">fn</span> <span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="comment">// Taken from https://www.iana.org/assignments/tls-parameters/tls-parameters.xml</span>
 <span class="comment">// A cipher_suite is a specific combination of key agreement, cipher and MAC</span>
 <span class="comment">// function.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cipher_suite_for_id</span>(<span class="ident">id</span>: <span class="ident">CipherSuiteID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cipher_suite_for_id</span>(<span class="ident">id</span>: <span class="ident">CipherSuiteID</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">match</span> <span class="ident">id</span> {
         <span class="comment">//TODO: complete all cipher suites</span>
         <span class="comment">/*CipherSuiteID::TLS_ECDHE_ECDSA_WITH_AES_128_CCM =&gt;
@@ -381,7 +393,7 @@
 }
 
 <span class="comment">// CipherSuites we support in order of preference</span>
-<span class="kw">fn</span> <span class="ident">default_cipher_suites</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">default_cipher_suites</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="macro">vec</span><span class="macro">!</span>[
         <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">CipherSuiteTLSEcdheEcdsaWithAes128GcmSha256</span>::<span class="ident">default</span>()),
         <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">CipherSuiteTLSEcdheEcdsaWithAes256CbcSha</span>::<span class="ident">default</span>()),
@@ -390,7 +402,7 @@
     ]
 }
 
-<span class="kw">fn</span> <span class="ident">all_cipher_suites</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">all_cipher_suites</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="macro">vec</span><span class="macro">!</span>[
         <span class="comment">//TODO: newCipherSuiteTLSEcdheEcdsaWithAes128Ccm(),</span>
         <span class="comment">//TODO: newCipherSuiteTLSEcdheEcdsaWithAes128Ccm8(),</span>
@@ -404,7 +416,9 @@
     ]
 }
 
-<span class="kw">fn</span> <span class="ident">cipher_suites_for_ids</span>(<span class="ident">ids</span>: <span class="kw-2">&amp;</span>[<span class="ident">CipherSuiteID</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">cipher_suites_for_ids</span>(
+    <span class="ident">ids</span>: <span class="kw-2">&amp;</span>[<span class="ident">CipherSuiteID</span>],
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cipher_suites</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
     <span class="kw">for</span> <span class="ident">id</span> <span class="kw">in</span> <span class="ident">ids</span> {
         <span class="ident">cipher_suites</span>.<span class="ident">push</span>(<span class="ident">cipher_suite_for_id</span>(<span class="kw-2">*</span><span class="ident">id</span>)<span class="question-mark">?</span>);
@@ -416,14 +430,14 @@
     <span class="ident">user_selected_suites</span>: <span class="kw-2">&amp;</span>[<span class="ident">CipherSuiteID</span>],
     <span class="ident">exclude_psk</span>: <span class="ident">bool</span>,
     <span class="ident">exclude_non_psk</span>: <span class="ident">bool</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">cipher_suites</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">user_selected_suites</span>.<span class="ident">is_empty</span>() {
         <span class="ident">cipher_suites_for_ids</span>(<span class="ident">user_selected_suites</span>)<span class="question-mark">?</span>
     } <span class="kw">else</span> {
         <span class="ident">default_cipher_suites</span>()
     };
 
-    <span class="kw">let</span> <span class="ident">filtered_cipher_suites</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">cipher_suites</span>
+    <span class="kw">let</span> <span class="ident">filtered_cipher_suites</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">CipherSuite</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">cipher_suites</span>
         .<span class="ident">into_iter</span>()
         .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="op">!</span>((<span class="ident">exclude_psk</span> <span class="op">&amp;&amp;</span> <span class="ident">c</span>.<span class="ident">is_psk</span>()) <span class="op">|</span><span class="op">|</span> (<span class="ident">exclude_non_psk</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">c</span>.<span class="ident">is_psk</span>())))
         .<span class="ident">collect</span>();

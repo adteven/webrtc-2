@@ -184,7 +184,17 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">flight2</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">config</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">conn</span>::<span class="kw-2">*</span>;
@@ -200,173 +210,181 @@
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight0parse</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
-    <span class="comment">/*context.Context,*/</span>
-    <span class="ident">_c</span>: <span class="ident">C</span>,
-    <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
-    <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
-    <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Flight</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-    <span class="kw">let</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">cache</span>
-        .<span class="ident">full_pull_map</span>(
-            <span class="number">0</span>,
-            <span class="kw-2">&amp;</span>[<span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            }],
-        )
-        .<span class="ident">await</span>
-    {
-        <span class="prelude-val">Ok</span>((<span class="ident">seq</span>, <span class="ident">msgs</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>),
-        <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)),
-    };
+<span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 
-    <span class="ident">state</span>.<span class="ident">handshake_recv_sequence</span> <span class="op">=</span> <span class="ident">seq</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">Flight0</span>;
 
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">msgs</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>) {
-        <span class="comment">// Validate type</span>
-        <span class="kw">let</span> <span class="ident">client_hello</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">message</span> {
-            <span class="ident">HandshakeMessage</span>::<span class="ident">ClientHello</span>(<span class="ident">client_hello</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">client_hello</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-                    }),
-                    <span class="prelude-val">None</span>,
-                ))
-            }
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span> <span class="ident">Flight</span> <span class="kw">for</span> <span class="ident">Flight0</span> {
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">parse</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">_c</span>: <span class="kw-2">&amp;</span><span class="ident">Conn</span>,
+        <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
+        <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
+        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">Flight</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+        <span class="kw">let</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">cache</span>
+            .<span class="ident">full_pull_map</span>(
+                <span class="number">0</span>,
+                <span class="kw-2">&amp;</span>[<span class="ident">HandshakeCachePullRule</span> {
+                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>,
+                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                    <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                }],
+            )
+            .<span class="ident">await</span>
+        {
+            <span class="prelude-val">Ok</span>((<span class="ident">seq</span>, <span class="ident">msgs</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)),
         };
 
-        <span class="kw">if</span> <span class="ident">client_hello</span>.<span class="ident">version</span> <span class="op">!</span><span class="op">=</span> <span class="ident">PROTOCOL_VERSION1_2</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                    <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">ProtocolVersion</span>,
-                }),
-                <span class="prelude-val">Some</span>(<span class="ident">ERR_UNSUPPORTED_PROTOCOL_VERSION</span>.<span class="ident">clone</span>()),
-            ));
-        }
+        <span class="ident">state</span>.<span class="ident">handshake_recv_sequence</span> <span class="op">=</span> <span class="ident">seq</span>;
 
-        <span class="ident">state</span>.<span class="ident">remote_random</span> <span class="op">=</span> <span class="ident">client_hello</span>.<span class="ident">random</span>.<span class="ident">clone</span>();
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>) <span class="op">=</span>
-            <span class="ident">find_matching_cipher_suite</span>(<span class="kw-2">&amp;</span><span class="ident">client_hello</span>.<span class="ident">cipher_suites</span>, <span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">local_cipher_suites</span>)
-        {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="ident">cipher_suite_for_id</span>(<span class="ident">id</span>) {
-                <span class="ident">state</span>.<span class="ident">cipher_suite</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>);
-            }
-        } <span class="kw">else</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                    <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
-                }),
-                <span class="prelude-val">Some</span>(<span class="ident">ERR_CIPHER_SUITE_NO_INTERSECTION</span>.<span class="ident">clone</span>()),
-            ));
-        }
-
-        <span class="kw">for</span> <span class="ident">extension</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">client_hello</span>.<span class="ident">extensions</span> {
-            <span class="kw">match</span> <span class="ident">extension</span> {
-                <span class="ident">Extension</span>::<span class="ident">SupportedEllipticCurves</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">elliptic_curves</span>.<span class="ident">is_empty</span>() {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                            <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                                <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                                <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
-                            }),
-                            <span class="prelude-val">Some</span>(<span class="ident">ERR_NO_SUPPORTED_ELLIPTIC_CURVES</span>.<span class="ident">clone</span>()),
-                        ));
-                    }
-                    <span class="ident">state</span>.<span class="ident">named_curve</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">elliptic_curves</span>[<span class="number">0</span>];
-                }
-                <span class="ident">Extension</span>::<span class="ident">UseSRTP</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">profile</span>) <span class="op">=</span> <span class="ident">find_matching_srtp_profile</span>(
-                        <span class="kw-2">&amp;</span><span class="ident">e</span>.<span class="ident">protection_profiles</span>,
-                        <span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">local_srtp_protection_profiles</span>,
-                    ) {
-                        <span class="ident">state</span>.<span class="ident">srtp_protection_profile</span> <span class="op">=</span> <span class="ident">profile</span>;
-                    } <span class="kw">else</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                            <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                                <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                                <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
-                            }),
-                            <span class="prelude-val">Some</span>(<span class="ident">ERR_SERVER_NO_MATCHING_SRTP_PROFILE</span>.<span class="ident">clone</span>()),
-                        ));
-                    }
-                }
-                <span class="ident">Extension</span>::<span class="ident">UseExtendedMasterSecret</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">extended_master_secret</span> <span class="op">!</span><span class="op">=</span> <span class="ident">ExtendedMasterSecretType</span>::<span class="ident">Disable</span> {
-                        <span class="ident">state</span>.<span class="ident">extended_master_secret</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                    }
-                }
-                <span class="ident">Extension</span>::<span class="ident">ServerName</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="ident">state</span>.<span class="ident">server_name</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">server_name</span>.<span class="ident">clone</span>(); <span class="comment">// remote server name</span>
-                }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
-            }
-        }
-
-        <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">extended_master_secret</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ExtendedMasterSecretType</span>::<span class="ident">Require</span>
-            <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">state</span>.<span class="ident">extended_master_secret</span>
-        {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                    <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
-                }),
-                <span class="prelude-val">Some</span>(<span class="ident">ERR_SERVER_REQUIRED_BUT_NO_CLIENT_EMS</span>.<span class="ident">clone</span>()),
-            ));
-        }
-
-        <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">local_keypair</span>.<span class="ident">is_none</span>() {
-            <span class="ident">state</span>.<span class="ident">local_keypair</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">state</span>.<span class="ident">named_curve</span>.<span class="ident">generate_keypair</span>() {
-                <span class="prelude-val">Ok</span>(<span class="ident">local_keypar</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">local_keypar</span>),
-                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">msgs</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>) {
+            <span class="comment">// Validate type</span>
+            <span class="kw">let</span> <span class="ident">client_hello</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">message</span> {
+                <span class="ident">HandshakeMessage</span>::<span class="ident">ClientHello</span>(<span class="ident">client_hello</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">client_hello</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>((
                         <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
                             <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">IllegalParameter</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
                         }),
-                        <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                        <span class="prelude-val">None</span>,
                     ))
                 }
             };
+
+            <span class="kw">if</span> <span class="ident">client_hello</span>.<span class="ident">version</span> <span class="op">!</span><span class="op">=</span> <span class="ident">PROTOCOL_VERSION1_2</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">ProtocolVersion</span>,
+                    }),
+                    <span class="prelude-val">Some</span>(<span class="ident">ERR_UNSUPPORTED_PROTOCOL_VERSION</span>.<span class="ident">clone</span>()),
+                ));
+            }
+
+            <span class="ident">state</span>.<span class="ident">remote_random</span> <span class="op">=</span> <span class="ident">client_hello</span>.<span class="ident">random</span>.<span class="ident">clone</span>();
+
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>) <span class="op">=</span>
+                <span class="ident">find_matching_cipher_suite</span>(<span class="kw-2">&amp;</span><span class="ident">client_hello</span>.<span class="ident">cipher_suites</span>, <span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">local_cipher_suites</span>)
+            {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="ident">cipher_suite_for_id</span>(<span class="ident">id</span>) {
+                    <span class="ident">state</span>.<span class="ident">cipher_suite</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>);
+                }
+            } <span class="kw">else</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
+                    }),
+                    <span class="prelude-val">Some</span>(<span class="ident">ERR_CIPHER_SUITE_NO_INTERSECTION</span>.<span class="ident">clone</span>()),
+                ));
+            }
+
+            <span class="kw">for</span> <span class="ident">extension</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">client_hello</span>.<span class="ident">extensions</span> {
+                <span class="kw">match</span> <span class="ident">extension</span> {
+                    <span class="ident">Extension</span>::<span class="ident">SupportedEllipticCurves</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">elliptic_curves</span>.<span class="ident">is_empty</span>() {
+                            <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                                <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                                    <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
+                                }),
+                                <span class="prelude-val">Some</span>(<span class="ident">ERR_NO_SUPPORTED_ELLIPTIC_CURVES</span>.<span class="ident">clone</span>()),
+                            ));
+                        }
+                        <span class="ident">state</span>.<span class="ident">named_curve</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">elliptic_curves</span>[<span class="number">0</span>];
+                    }
+                    <span class="ident">Extension</span>::<span class="ident">UseSRTP</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">profile</span>) <span class="op">=</span> <span class="ident">find_matching_srtp_profile</span>(
+                            <span class="kw-2">&amp;</span><span class="ident">e</span>.<span class="ident">protection_profiles</span>,
+                            <span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">local_srtp_protection_profiles</span>,
+                        ) {
+                            <span class="ident">state</span>.<span class="ident">srtp_protection_profile</span> <span class="op">=</span> <span class="ident">profile</span>;
+                        } <span class="kw">else</span> {
+                            <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                                <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                                    <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
+                                }),
+                                <span class="prelude-val">Some</span>(<span class="ident">ERR_SERVER_NO_MATCHING_SRTP_PROFILE</span>.<span class="ident">clone</span>()),
+                            ));
+                        }
+                    }
+                    <span class="ident">Extension</span>::<span class="ident">UseExtendedMasterSecret</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">extended_master_secret</span> <span class="op">!</span><span class="op">=</span> <span class="ident">ExtendedMasterSecretType</span>::<span class="ident">Disable</span> {
+                            <span class="ident">state</span>.<span class="ident">extended_master_secret</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                        }
+                    }
+                    <span class="ident">Extension</span>::<span class="ident">ServerName</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">state</span>.<span class="ident">server_name</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">server_name</span>.<span class="ident">clone</span>(); <span class="comment">// remote server name</span>
+                    }
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
+                }
+            }
+
+            <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">extended_master_secret</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ExtendedMasterSecretType</span>::<span class="ident">Require</span>
+                <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">state</span>.<span class="ident">extended_master_secret</span>
+            {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
+                    }),
+                    <span class="prelude-val">Some</span>(<span class="ident">ERR_SERVER_REQUIRED_BUT_NO_CLIENT_EMS</span>.<span class="ident">clone</span>()),
+                ));
+            }
+
+            <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">local_keypair</span>.<span class="ident">is_none</span>() {
+                <span class="ident">state</span>.<span class="ident">local_keypair</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">state</span>.<span class="ident">named_curve</span>.<span class="ident">generate_keypair</span>() {
+                    <span class="prelude-val">Ok</span>(<span class="ident">local_keypar</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">local_keypar</span>),
+                    <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                            <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                                <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                                <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">IllegalParameter</span>,
+                            }),
+                            <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                        ))
+                    }
+                };
+            }
+
+            <span class="prelude-val">Ok</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Flight2</span> {}))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>((
+                <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                    <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                }),
+                <span class="prelude-val">None</span>,
+            ))
         }
-
-        <span class="prelude-val">Ok</span>(<span class="ident">Flight</span>::<span class="ident">Flight2</span>)
-    } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>((
-            <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-            }),
-            <span class="prelude-val">None</span>,
-        ))
     }
-}
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight0generate</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
-    <span class="ident">_c</span>: <span class="ident">C</span>,
-    <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
-    <span class="ident">_cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
-    <span class="ident">_cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Packet</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-    <span class="comment">// Initialize</span>
-    <span class="ident">rand</span>::<span class="ident">thread_rng</span>().<span class="ident">fill</span>(<span class="ident">state</span>.<span class="ident">cookie</span>.<span class="ident">as_mut_slice</span>());
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">generate</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">_c</span>: <span class="kw-2">&amp;</span><span class="ident">Conn</span>,
+        <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
+        <span class="ident">_cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
+        <span class="ident">_cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Packet</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+        <span class="comment">// Initialize</span>
+        <span class="ident">rand</span>::<span class="ident">thread_rng</span>().<span class="ident">fill</span>(<span class="ident">state</span>.<span class="ident">cookie</span>.<span class="ident">as_mut_slice</span>());
 
-    <span class="comment">//TODO: figure out difference between golang&#39;s atom store and rust atom store</span>
-    <span class="kw">let</span> <span class="ident">zero_epoch</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="ident">state</span>.<span class="ident">local_epoch</span>.<span class="ident">store</span>(<span class="ident">zero_epoch</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
-    <span class="ident">state</span>.<span class="ident">remote_epoch</span>.<span class="ident">store</span>(<span class="ident">zero_epoch</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+        <span class="comment">//TODO: figure out difference between golang&#39;s atom store and rust atom store</span>
+        <span class="kw">let</span> <span class="ident">zero_epoch</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="ident">state</span>.<span class="ident">local_epoch</span>.<span class="ident">store</span>(<span class="ident">zero_epoch</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+        <span class="ident">state</span>.<span class="ident">remote_epoch</span>.<span class="ident">store</span>(<span class="ident">zero_epoch</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
 
-    <span class="ident">state</span>.<span class="ident">named_curve</span> <span class="op">=</span> <span class="ident">DEFAULT_NAMED_CURVE</span>;
-    <span class="ident">state</span>.<span class="ident">local_random</span>.<span class="ident">populate</span>();
+        <span class="ident">state</span>.<span class="ident">named_curve</span> <span class="op">=</span> <span class="ident">DEFAULT_NAMED_CURVE</span>;
+        <span class="ident">state</span>.<span class="ident">local_random</span>.<span class="ident">populate</span>();
 
-    <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[])
+        <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[])
+    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "dtls";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

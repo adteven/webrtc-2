@@ -772,9 +772,24 @@
 <span id="769">769</span>
 <span id="770">770</span>
 <span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">flight3</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">conn</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">content</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">crypto</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">curve</span>::<span class="ident">named_curve</span>::<span class="kw-2">*</span>;
@@ -797,482 +812,63 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">change_cipher_spec</span>::<span class="ident">ChangeCipherSpec</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="ident">BufReader</span>, <span class="ident">BufWriter</span>};
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight5parse</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
-    <span class="comment">/*context.Context,*/</span>
-    <span class="ident">_c</span>: <span class="ident">C</span>,
-    <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
-    <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
-    <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Flight</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-    <span class="kw">let</span> (<span class="ident">_seq</span>, <span class="ident">msgs</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">cache</span>
-        .<span class="ident">full_pull_map</span>(
-            <span class="number">0</span>,
-            <span class="kw-2">&amp;</span>[<span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Finished</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span> <span class="op">+</span> <span class="number">1</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            }],
-        )
-        .<span class="ident">await</span>
-    {
-        <span class="prelude-val">Ok</span>((<span class="ident">seq</span>, <span class="ident">msgs</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>),
-        <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)),
-    };
+<span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 
-    <span class="kw">let</span> <span class="ident">finished</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">msgs</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">Finished</span>) {
-        <span class="kw">match</span> <span class="ident">message</span> {
-            <span class="ident">HandshakeMessage</span>::<span class="ident">Finished</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-                    }),
-                    <span class="prelude-val">None</span>,
-                ))
-            }
-        }
-    } <span class="kw">else</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>((
-            <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-            }),
-            <span class="prelude-val">None</span>,
-        ));
-    };
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">Flight5</span>;
 
-    <span class="kw">let</span> <span class="ident">plain_text</span> <span class="op">=</span> <span class="ident">cache</span>
-        .<span class="ident">pull_and_merge</span>(<span class="kw-2">&amp;</span>[
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Certificate</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerKeyExchange</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">CertificateRequest</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHelloDone</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Certificate</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientKeyExchange</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">CertificateVerify</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-            <span class="ident">HandshakeCachePullRule</span> {
-                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Finished</span>,
-                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span> <span class="op">+</span> <span class="number">1</span>,
-                <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                <span class="ident">optional</span>: <span class="bool-val">false</span>,
-            },
-        ])
-        .<span class="ident">await</span>;
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span> <span class="ident">Flight</span> <span class="kw">for</span> <span class="ident">Flight5</span> {
+    <span class="kw">fn</span> <span class="ident">is_last_recv_flight</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="bool-val">true</span>
+    }
 
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-        <span class="kw">let</span> <span class="ident">expected_verify_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">prf_verify_data_server</span>(
-            <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">master_secret</span>,
-            <span class="kw-2">&amp;</span><span class="ident">plain_text</span>,
-            <span class="ident">cipher_suite</span>.<span class="ident">hash_func</span>(),
-        ) {
-            <span class="prelude-val">Ok</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-                ))
-            }
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">parse</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">_c</span>: <span class="kw-2">&amp;</span><span class="ident">Conn</span>,
+        <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
+        <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
+        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">Flight</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+        <span class="kw">let</span> (<span class="ident">_seq</span>, <span class="ident">msgs</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">cache</span>
+            .<span class="ident">full_pull_map</span>(
+                <span class="number">0</span>,
+                <span class="kw-2">&amp;</span>[<span class="ident">HandshakeCachePullRule</span> {
+                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Finished</span>,
+                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span> <span class="op">+</span> <span class="number">1</span>,
+                    <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                }],
+            )
+            .<span class="ident">await</span>
+        {
+            <span class="prelude-val">Ok</span>((<span class="ident">seq</span>, <span class="ident">msgs</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)),
         };
 
-        <span class="kw">if</span> <span class="ident">expected_verify_data</span> <span class="op">!</span><span class="op">=</span> <span class="ident">finished</span>.<span class="ident">verify_data</span> {
+        <span class="kw">let</span> <span class="ident">finished</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">msgs</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">Finished</span>) {
+            <span class="kw">match</span> <span class="ident">message</span> {
+                <span class="ident">HandshakeMessage</span>::<span class="ident">Finished</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                        }),
+                        <span class="prelude-val">None</span>,
+                    ))
+                }
+            }
+        } <span class="kw">else</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>((
                 <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
                     <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">HandshakeFailure</span>,
+                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
                 }),
-                <span class="prelude-val">Some</span>(<span class="ident">ERR_VERIFY_DATA_MISMATCH</span>.<span class="ident">clone</span>()),
+                <span class="prelude-val">None</span>,
             ));
-        }
-    }
-
-    <span class="prelude-val">Ok</span>(<span class="ident">Flight</span>::<span class="ident">Flight5</span>)
-}
-
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight5generate</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
-    <span class="ident">_c</span>: <span class="ident">C</span>,
-    <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
-    <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
-    <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Packet</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">certificate</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">local_certificates</span>.<span class="ident">is_empty</span>() {
-        <span class="kw">let</span> <span class="ident">cert</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">cfg</span>.<span class="ident">get_certificate</span>(<span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">server_name</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">cert</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cert</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">HandshakeFailure</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-                ))
-            }
-        };
-        <span class="prelude-val">Some</span>(<span class="ident">cert</span>)
-    } <span class="kw">else</span> {
-        <span class="prelude-val">None</span>
-    };
-
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pkts</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-
-    <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">remote_requested_certificate</span> {
-        <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">Packet</span> {
-            <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
-                <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
-                    <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
-                    ..<span class="ident">Default</span>::<span class="ident">default</span>()
-                },
-                <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
-                    <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
-                    <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">Certificate</span>(<span class="ident">HandshakeMessageCertificate</span> {
-                        <span class="ident">certificate</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cert</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">certificate</span> {
-                            <span class="ident">cert</span>.<span class="ident">certificate</span>.<span class="ident">clone</span>()
-                        } <span class="kw">else</span> {
-                            <span class="macro">vec</span><span class="macro">!</span>[]
-                        }],
-                    }),
-                }),
-            },
-            <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
-            <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
-        });
-    }
-
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client_key_exchange</span> <span class="op">=</span> <span class="ident">HandshakeMessageClientKeyExchange</span> {
-        <span class="ident">identity_hint</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-        <span class="ident">public_key</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-    };
-    <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">local_psk_callback</span>.<span class="ident">is_none</span>() {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">local_keypair</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">local_keypair</span> {
-            <span class="ident">client_key_exchange</span>.<span class="ident">public_key</span> <span class="op">=</span> <span class="ident">local_keypair</span>.<span class="ident">public_key</span>.<span class="ident">clone</span>();
-        }
-    } <span class="kw">else</span> {
-        <span class="ident">client_key_exchange</span>.<span class="ident">identity_hint</span> <span class="op">=</span> <span class="ident">cfg</span>.<span class="ident">local_psk_identity_hint</span>.<span class="ident">clone</span>();
-    }
-
-    <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">Packet</span> {
-        <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
-            <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
-                <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
-                ..<span class="ident">Default</span>::<span class="ident">default</span>()
-            },
-            <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
-                <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
-                <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">ClientKeyExchange</span>(<span class="ident">client_key_exchange</span>),
-            }),
-        },
-        <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
-        <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
-    });
-
-    <span class="kw">let</span> <span class="ident">server_key_exchange_data</span> <span class="op">=</span> <span class="ident">cache</span>
-        .<span class="ident">pull_and_merge</span>(<span class="kw-2">&amp;</span>[<span class="ident">HandshakeCachePullRule</span> {
-            <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerKeyExchange</span>,
-            <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-            <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-            <span class="ident">optional</span>: <span class="bool-val">false</span>,
-        }])
-        .<span class="ident">await</span>;
-
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server_key_exchange</span> <span class="op">=</span> <span class="ident">HandshakeMessageServerKeyExchange</span> {
-        <span class="ident">identity_hint</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-        <span class="ident">elliptic_curve_type</span>: <span class="ident">EllipticCurveType</span>::<span class="ident">Unsupported</span>,
-        <span class="ident">named_curve</span>: <span class="ident">NamedCurve</span>::<span class="ident">Unsupported</span>,
-        <span class="ident">public_key</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-        <span class="ident">hash_algorithm</span>: <span class="ident">HashAlgorithm</span>::<span class="ident">Unsupported</span>,
-        <span class="ident">signature_algorithm</span>: <span class="ident">SignatureAlgorithm</span>::<span class="ident">Unsupported</span>,
-        <span class="ident">signature</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-    };
-
-    <span class="comment">// handshakeMessageServerKeyExchange is optional for PSK</span>
-    <span class="kw">if</span> <span class="ident">server_key_exchange_data</span>.<span class="ident">is_empty</span>() {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>((<span class="ident">alert</span>, <span class="ident">err</span>)) <span class="op">=</span> <span class="ident">handle_server_key_exchange</span>(<span class="ident">state</span>, <span class="ident">cfg</span>, <span class="kw-2">&amp;</span><span class="ident">server_key_exchange</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="ident">alert</span>, <span class="ident">err</span>));
-        }
-    } <span class="kw">else</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">server_key_exchange_data</span>.<span class="ident">as_slice</span>());
-        <span class="kw">let</span> <span class="ident">raw_handshake</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Handshake</span>::<span class="ident">unmarshal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">UnexpectedMessage</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-                ))
-            }
         };
 
-        <span class="kw">match</span> <span class="ident">raw_handshake</span>.<span class="ident">handshake_message</span> {
-            <span class="ident">HandshakeMessage</span>::<span class="ident">ServerKeyExchange</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">server_key_exchange</span> <span class="op">=</span> <span class="ident">h</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">UnexpectedMessage</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">ERR_INVALID_CONTENT_TYPE</span>.<span class="ident">clone</span>()),
-                ))
-            }
-        };
-    }
-
-    <span class="comment">// Append not-yet-sent packets</span>
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">merged</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seq_pred</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">handshake_send_sequence</span> <span class="kw">as</span> <span class="ident">u16</span>;
-    <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pkts</span> {
-        <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">p</span>.<span class="ident">record</span>.<span class="ident">content</span> {
-            <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">ERR_INVALID_CONTENT_TYPE</span>.<span class="ident">clone</span>()),
-                ))
-            }
-        };
-        <span class="ident">h</span>.<span class="ident">handshake_header</span>.<span class="ident">message_sequence</span> <span class="op">=</span> <span class="ident">seq_pred</span>;
-        <span class="ident">seq_pred</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-        {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="ident">BufWriter</span>::<span class="ident">new</span>(<span class="ident">raw</span>.<span class="ident">as_mut_slice</span>());
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">h</span>.<span class="ident">marshal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">writer</span>) {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-                ));
-            }
-        }
-
-        <span class="ident">merged</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-    }
-
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>((<span class="ident">alert</span>, <span class="ident">err</span>)) <span class="op">=</span>
-        <span class="ident">initalize_cipher_suite</span>(<span class="ident">state</span>, <span class="ident">cache</span>, <span class="ident">cfg</span>, <span class="kw-2">&amp;</span><span class="ident">server_key_exchange</span>, <span class="kw-2">&amp;</span><span class="ident">merged</span>).<span class="ident">await</span>
-    {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="ident">alert</span>, <span class="ident">err</span>));
-    }
-
-    <span class="comment">// If the client has sent a certificate with signing ability, a digitally-signed</span>
-    <span class="comment">// CertificateVerify message is sent to explicitly verify possession of the</span>
-    <span class="comment">// private key in the certificate.</span>
-    <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">remote_requested_certificate</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">local_certificates</span>.<span class="ident">is_empty</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plain_text</span> <span class="op">=</span> <span class="ident">cache</span>
-            .<span class="ident">pull_and_merge</span>(<span class="kw-2">&amp;</span>[
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
-                },
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
-                },
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Certificate</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
-                },
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerKeyExchange</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
-                },
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">CertificateRequest</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
-                },
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHelloDone</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
-                },
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Certificate</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
-                },
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientKeyExchange</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">true</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">false</span>,
-                },
-            ])
-            .<span class="ident">await</span>;
-
-        <span class="ident">plain_text</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">merged</span>);
-
-        <span class="comment">// Find compatible signature scheme</span>
-        <span class="kw">let</span> <span class="ident">signature_hash_algo</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">select_signature_scheme</span>(
-            <span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">local_signature_schemes</span>,
-            <span class="kw-2">&amp;</span><span class="ident">certificate</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">private_key</span>,
-        ) {
-            <span class="prelude-val">Ok</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-                ))
-            }
-        };
-
-        <span class="kw">let</span> <span class="ident">cert_verify</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">generate_certificate_verify</span>(
-            <span class="kw-2">&amp;</span><span class="ident">plain_text</span>,
-            <span class="kw-2">&amp;</span><span class="ident">certificate</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">private_key</span>, <span class="comment">/*, signature_hash_algo.hash*/</span>
-        ) {
-            <span class="prelude-val">Ok</span>(<span class="ident">cert</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cert</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-                ))
-            }
-        };
-        <span class="ident">state</span>.<span class="ident">local_certificates_verify</span> <span class="op">=</span> <span class="ident">cert_verify</span>;
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">Packet</span> {
-            <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
-                <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
-                    <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
-                    ..<span class="ident">Default</span>::<span class="ident">default</span>()
-                },
-                <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
-                    <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
-                    <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">CertificateVerify</span>(
-                        <span class="ident">HandshakeMessageCertificateVerify</span> {
-                            <span class="ident">hash_algorithm</span>: <span class="ident">signature_hash_algo</span>.<span class="ident">hash</span>,
-                            <span class="ident">signature_algorithm</span>: <span class="ident">signature_hash_algo</span>.<span class="ident">signature</span>,
-                            <span class="ident">signature</span>: <span class="ident">state</span>.<span class="ident">local_certificates_verify</span>.<span class="ident">clone</span>(),
-                        },
-                    ),
-                }),
-            },
-            <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
-            <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
-        };
-
-        <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">p</span>.<span class="ident">record</span>.<span class="ident">content</span> {
-            <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">ERR_INVALID_CONTENT_TYPE</span>.<span class="ident">clone</span>()),
-                ))
-            }
-        };
-        <span class="ident">h</span>.<span class="ident">handshake_header</span>.<span class="ident">message_sequence</span> <span class="op">=</span> <span class="ident">seq_pred</span>;
-
-        <span class="comment">// seqPred++ // this is the last use of seqPred</span>
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-        {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="ident">BufWriter</span>::<span class="ident">new</span>(<span class="ident">raw</span>.<span class="ident">as_mut_slice</span>());
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">h</span>.<span class="ident">marshal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">writer</span>) {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>((
-                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-                    }),
-                    <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-                ));
-            }
-        }
-        <span class="ident">merged</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-
-        <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">p</span>);
-    }
-
-    <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">Packet</span> {
-        <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
-            <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
-                <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
-                ..<span class="ident">Default</span>::<span class="ident">default</span>()
-            },
-            <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">ChangeCipherSpec</span>(<span class="ident">ChangeCipherSpec</span> {}),
-        },
-        <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
-        <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
-    });
-
-    <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">local_verify_data</span>.<span class="ident">is_empty</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plain_text</span> <span class="op">=</span> <span class="ident">cache</span>
+        <span class="kw">let</span> <span class="ident">plain_text</span> <span class="op">=</span> <span class="ident">cache</span>
             .<span class="ident">pull_and_merge</span>(<span class="kw-2">&amp;</span>[
                 <span class="ident">HandshakeCachePullRule</span> {
                     <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>,
@@ -1337,14 +933,294 @@
             ])
             .<span class="ident">await</span>;
 
-        <span class="ident">plain_text</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">merged</span>);
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-            <span class="ident">state</span>.<span class="ident">local_verify_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">prf_verify_data_client</span>(
+            <span class="kw">let</span> <span class="ident">expected_verify_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">prf_verify_data_server</span>(
                 <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">master_secret</span>,
                 <span class="kw-2">&amp;</span><span class="ident">plain_text</span>,
                 <span class="ident">cipher_suite</span>.<span class="ident">hash_func</span>(),
             ) {
-                <span class="prelude-val">Ok</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">data</span>,
+                <span class="prelude-val">Ok</span>(<span class="ident">d</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">d</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                    ))
+                }
+            };
+
+            <span class="kw">if</span> <span class="ident">expected_verify_data</span> <span class="op">!</span><span class="op">=</span> <span class="ident">finished</span>.<span class="ident">verify_data</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                    <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                        <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">HandshakeFailure</span>,
+                    }),
+                    <span class="prelude-val">Some</span>(<span class="ident">ERR_VERIFY_DATA_MISMATCH</span>.<span class="ident">clone</span>()),
+                ));
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Flight5</span> {}))
+    }
+
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">generate</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">_c</span>: <span class="kw-2">&amp;</span><span class="ident">Conn</span>,
+        <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
+        <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
+        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Packet</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">certificate</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">local_certificates</span>.<span class="ident">is_empty</span>() {
+            <span class="kw">let</span> <span class="ident">cert</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">cfg</span>.<span class="ident">get_certificate</span>(<span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">server_name</span>) {
+                <span class="prelude-val">Ok</span>(<span class="ident">cert</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cert</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">HandshakeFailure</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                    ))
+                }
+            };
+            <span class="prelude-val">Some</span>(<span class="ident">cert</span>)
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        };
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pkts</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+
+        <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">remote_requested_certificate</span> {
+            <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">Packet</span> {
+                <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
+                    <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
+                        <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
+                        ..<span class="ident">Default</span>::<span class="ident">default</span>()
+                    },
+                    <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
+                        <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
+                        <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">Certificate</span>(
+                            <span class="ident">HandshakeMessageCertificate</span> {
+                                <span class="ident">certificate</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cert</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">certificate</span> {
+                                    <span class="ident">cert</span>.<span class="ident">certificate</span>.<span class="ident">clone</span>()
+                                } <span class="kw">else</span> {
+                                    <span class="macro">vec</span><span class="macro">!</span>[]
+                                }],
+                            },
+                        ),
+                    }),
+                },
+                <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
+                <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
+            });
+        }
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client_key_exchange</span> <span class="op">=</span> <span class="ident">HandshakeMessageClientKeyExchange</span> {
+            <span class="ident">identity_hint</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">public_key</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+        };
+        <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">local_psk_callback</span>.<span class="ident">is_none</span>() {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">local_keypair</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">local_keypair</span> {
+                <span class="ident">client_key_exchange</span>.<span class="ident">public_key</span> <span class="op">=</span> <span class="ident">local_keypair</span>.<span class="ident">public_key</span>.<span class="ident">clone</span>();
+            }
+        } <span class="kw">else</span> {
+            <span class="ident">client_key_exchange</span>.<span class="ident">identity_hint</span> <span class="op">=</span> <span class="ident">cfg</span>.<span class="ident">local_psk_identity_hint</span>.<span class="ident">clone</span>();
+        }
+
+        <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">Packet</span> {
+            <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
+                <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
+                    <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
+                    ..<span class="ident">Default</span>::<span class="ident">default</span>()
+                },
+                <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
+                    <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
+                    <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">ClientKeyExchange</span>(<span class="ident">client_key_exchange</span>),
+                }),
+            },
+            <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
+            <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
+        });
+
+        <span class="kw">let</span> <span class="ident">server_key_exchange_data</span> <span class="op">=</span> <span class="ident">cache</span>
+            .<span class="ident">pull_and_merge</span>(<span class="kw-2">&amp;</span>[<span class="ident">HandshakeCachePullRule</span> {
+                <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerKeyExchange</span>,
+                <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                <span class="ident">optional</span>: <span class="bool-val">false</span>,
+            }])
+            .<span class="ident">await</span>;
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server_key_exchange</span> <span class="op">=</span> <span class="ident">HandshakeMessageServerKeyExchange</span> {
+            <span class="ident">identity_hint</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">elliptic_curve_type</span>: <span class="ident">EllipticCurveType</span>::<span class="ident">Unsupported</span>,
+            <span class="ident">named_curve</span>: <span class="ident">NamedCurve</span>::<span class="ident">Unsupported</span>,
+            <span class="ident">public_key</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">hash_algorithm</span>: <span class="ident">HashAlgorithm</span>::<span class="ident">Unsupported</span>,
+            <span class="ident">signature_algorithm</span>: <span class="ident">SignatureAlgorithm</span>::<span class="ident">Unsupported</span>,
+            <span class="ident">signature</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+        };
+
+        <span class="comment">// handshakeMessageServerKeyExchange is optional for PSK</span>
+        <span class="kw">if</span> <span class="ident">server_key_exchange_data</span>.<span class="ident">is_empty</span>() {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>((<span class="ident">alert</span>, <span class="ident">err</span>)) <span class="op">=</span> <span class="ident">handle_server_key_exchange</span>(<span class="ident">state</span>, <span class="ident">cfg</span>, <span class="kw-2">&amp;</span><span class="ident">server_key_exchange</span>)
+            {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="ident">alert</span>, <span class="ident">err</span>));
+            }
+        } <span class="kw">else</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">server_key_exchange_data</span>.<span class="ident">as_slice</span>());
+            <span class="kw">let</span> <span class="ident">raw_handshake</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Handshake</span>::<span class="ident">unmarshal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span>) {
+                <span class="prelude-val">Ok</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">UnexpectedMessage</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                    ))
+                }
+            };
+
+            <span class="kw">match</span> <span class="ident">raw_handshake</span>.<span class="ident">handshake_message</span> {
+                <span class="ident">HandshakeMessage</span>::<span class="ident">ServerKeyExchange</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">server_key_exchange</span> <span class="op">=</span> <span class="ident">h</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">UnexpectedMessage</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">ERR_INVALID_CONTENT_TYPE</span>.<span class="ident">clone</span>()),
+                    ))
+                }
+            };
+        }
+
+        <span class="comment">// Append not-yet-sent packets</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">merged</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seq_pred</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">handshake_send_sequence</span> <span class="kw">as</span> <span class="ident">u16</span>;
+        <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pkts</span> {
+            <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">p</span>.<span class="ident">record</span>.<span class="ident">content</span> {
+                <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">ERR_INVALID_CONTENT_TYPE</span>.<span class="ident">clone</span>()),
+                    ))
+                }
+            };
+            <span class="ident">h</span>.<span class="ident">handshake_header</span>.<span class="ident">message_sequence</span> <span class="op">=</span> <span class="ident">seq_pred</span>;
+            <span class="ident">seq_pred</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+            {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="ident">BufWriter</span>::<span class="ident">new</span>(<span class="ident">raw</span>.<span class="ident">as_mut_slice</span>());
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">h</span>.<span class="ident">marshal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">writer</span>) {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                    ));
+                }
+            }
+
+            <span class="ident">merged</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
+        }
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>((<span class="ident">alert</span>, <span class="ident">err</span>)) <span class="op">=</span>
+            <span class="ident">initalize_cipher_suite</span>(<span class="ident">state</span>, <span class="ident">cache</span>, <span class="ident">cfg</span>, <span class="kw-2">&amp;</span><span class="ident">server_key_exchange</span>, <span class="kw-2">&amp;</span><span class="ident">merged</span>).<span class="ident">await</span>
+        {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="ident">alert</span>, <span class="ident">err</span>));
+        }
+
+        <span class="comment">// If the client has sent a certificate with signing ability, a digitally-signed</span>
+        <span class="comment">// CertificateVerify message is sent to explicitly verify possession of the</span>
+        <span class="comment">// private key in the certificate.</span>
+        <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">remote_requested_certificate</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">local_certificates</span>.<span class="ident">is_empty</span>() {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plain_text</span> <span class="op">=</span> <span class="ident">cache</span>
+                .<span class="ident">pull_and_merge</span>(<span class="kw-2">&amp;</span>[
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Certificate</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerKeyExchange</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">CertificateRequest</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHelloDone</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Certificate</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientKeyExchange</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                ])
+                .<span class="ident">await</span>;
+
+            <span class="ident">plain_text</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">merged</span>);
+
+            <span class="comment">// Find compatible signature scheme</span>
+            <span class="kw">let</span> <span class="ident">signature_hash_algo</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">select_signature_scheme</span>(
+                <span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">local_signature_schemes</span>,
+                <span class="kw-2">&amp;</span><span class="ident">certificate</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">private_key</span>,
+            ) {
+                <span class="prelude-val">Ok</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InsufficientSecurity</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                    ))
+                }
+            };
+
+            <span class="kw">let</span> <span class="ident">cert_verify</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">generate_certificate_verify</span>(
+                <span class="kw-2">&amp;</span><span class="ident">plain_text</span>,
+                <span class="kw-2">&amp;</span><span class="ident">certificate</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">private_key</span>, <span class="comment">/*, signature_hash_algo.hash*/</span>
+            ) {
+                <span class="prelude-val">Ok</span>(<span class="ident">cert</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cert</span>,
                 <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>((
                         <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
@@ -1355,30 +1231,183 @@
                     ))
                 }
             };
+            <span class="ident">state</span>.<span class="ident">local_certificates_verify</span> <span class="op">=</span> <span class="ident">cert_verify</span>;
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">Packet</span> {
+                <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
+                    <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
+                        <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
+                        ..<span class="ident">Default</span>::<span class="ident">default</span>()
+                    },
+                    <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
+                        <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
+                        <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">CertificateVerify</span>(
+                            <span class="ident">HandshakeMessageCertificateVerify</span> {
+                                <span class="ident">hash_algorithm</span>: <span class="ident">signature_hash_algo</span>.<span class="ident">hash</span>,
+                                <span class="ident">signature_algorithm</span>: <span class="ident">signature_hash_algo</span>.<span class="ident">signature</span>,
+                                <span class="ident">signature</span>: <span class="ident">state</span>.<span class="ident">local_certificates_verify</span>.<span class="ident">clone</span>(),
+                            },
+                        ),
+                    }),
+                },
+                <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
+                <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
+            };
+
+            <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">p</span>.<span class="ident">record</span>.<span class="ident">content</span> {
+                <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">ERR_INVALID_CONTENT_TYPE</span>.<span class="ident">clone</span>()),
+                    ))
+                }
+            };
+            <span class="ident">h</span>.<span class="ident">handshake_header</span>.<span class="ident">message_sequence</span> <span class="op">=</span> <span class="ident">seq_pred</span>;
+
+            <span class="comment">// seqPred++ // this is the last use of seqPred</span>
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">raw</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+            {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="ident">BufWriter</span>::<span class="ident">new</span>(<span class="ident">raw</span>.<span class="ident">as_mut_slice</span>());
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">h</span>.<span class="ident">marshal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">writer</span>) {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                        }),
+                        <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                    ));
+                }
+            }
+            <span class="ident">merged</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
+
+            <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">p</span>);
         }
-    }
 
-    <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">Packet</span> {
-        <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
-            <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
-                <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
-                <span class="ident">epoch</span>: <span class="number">1</span>,
-                ..<span class="ident">Default</span>::<span class="ident">default</span>()
+        <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">Packet</span> {
+            <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
+                <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
+                    <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
+                    ..<span class="ident">Default</span>::<span class="ident">default</span>()
+                },
+                <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">ChangeCipherSpec</span>(<span class="ident">ChangeCipherSpec</span> {}),
             },
-            <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
-                <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
-                <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">Finished</span>(<span class="ident">HandshakeMessageFinished</span> {
-                    <span class="ident">verify_data</span>: <span class="ident">state</span>.<span class="ident">local_verify_data</span>.<span class="ident">clone</span>(),
+            <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
+            <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
+        });
+
+        <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">local_verify_data</span>.<span class="ident">is_empty</span>() {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plain_text</span> <span class="op">=</span> <span class="ident">cache</span>
+                .<span class="ident">pull_and_merge</span>(<span class="kw-2">&amp;</span>[
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientHello</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Certificate</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerKeyExchange</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">CertificateRequest</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHelloDone</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Certificate</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ClientKeyExchange</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">CertificateVerify</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">Finished</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span> <span class="op">+</span> <span class="number">1</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">true</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">false</span>,
+                    },
+                ])
+                .<span class="ident">await</span>;
+
+            <span class="ident">plain_text</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">merged</span>);
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">cipher_suite</span> {
+                <span class="ident">state</span>.<span class="ident">local_verify_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">prf_verify_data_client</span>(
+                    <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">master_secret</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">plain_text</span>,
+                    <span class="ident">cipher_suite</span>.<span class="ident">hash_func</span>(),
+                ) {
+                    <span class="prelude-val">Ok</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">data</span>,
+                    <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                            <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                                <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                                <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                            }),
+                            <span class="prelude-val">Some</span>(<span class="ident">err</span>),
+                        ))
+                    }
+                };
+            }
+        }
+
+        <span class="ident">pkts</span>.<span class="ident">push</span>(<span class="ident">Packet</span> {
+            <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
+                <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
+                    <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
+                    <span class="ident">epoch</span>: <span class="number">1</span>,
+                    ..<span class="ident">Default</span>::<span class="ident">default</span>()
+                },
+                <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
+                    <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
+                    <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">Finished</span>(<span class="ident">HandshakeMessageFinished</span> {
+                        <span class="ident">verify_data</span>: <span class="ident">state</span>.<span class="ident">local_verify_data</span>.<span class="ident">clone</span>(),
+                    }),
                 }),
-            }),
-        },
-        <span class="ident">should_encrypt</span>: <span class="bool-val">true</span>,
-        <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">true</span>,
-    });
+            },
+            <span class="ident">should_encrypt</span>: <span class="bool-val">true</span>,
+            <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">true</span>,
+        });
 
-    <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[])
+        <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[])
+    }
 }
-
 <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">initalize_cipher_suite</span>(
     <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
     <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
@@ -1387,7 +1416,7 @@
     <span class="ident">sending_plain_text</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-        <span class="kw">if</span> <span class="ident">cipher_suite</span>.<span class="ident">is_initialized</span>().<span class="ident">await</span> {
+        <span class="kw">if</span> <span class="ident">cipher_suite</span>.<span class="ident">is_initialized</span>() {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }
     }
@@ -1528,9 +1557,8 @@
     }
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">cipher_suite</span>
-            .<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">master_secret</span>, <span class="kw-2">&amp;</span><span class="ident">client_random</span>, <span class="kw-2">&amp;</span><span class="ident">server_random</span>, <span class="bool-val">true</span>)
-            .<span class="ident">await</span>
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span>
+            <span class="ident">cipher_suite</span>.<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">master_secret</span>, <span class="kw-2">&amp;</span><span class="ident">client_random</span>, <span class="kw-2">&amp;</span><span class="ident">server_random</span>, <span class="bool-val">true</span>)
         {
             <span class="kw">return</span> <span class="prelude-val">Err</span>((
                 <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {

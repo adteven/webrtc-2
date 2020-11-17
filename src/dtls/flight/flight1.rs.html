@@ -181,6 +181,15 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">flight3</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
@@ -207,160 +216,169 @@
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight1parse</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
-    <span class="comment">/*context.Context,*/</span>
-    <span class="ident">c</span>: <span class="ident">C</span>,
-    <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
-    <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
-    <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Flight</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-    <span class="comment">// HelloVerifyRequest can be skipped by the server,</span>
-    <span class="comment">// so allow ServerHello during flight1 also</span>
-    <span class="kw">let</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">cache</span>
-        .<span class="ident">full_pull_map</span>(
-            <span class="ident">state</span>.<span class="ident">handshake_recv_sequence</span>,
-            <span class="kw-2">&amp;</span>[
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">HelloVerifyRequest</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">true</span>,
-                },
-                <span class="ident">HandshakeCachePullRule</span> {
-                    <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>,
-                    <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
-                    <span class="ident">is_client</span>: <span class="bool-val">false</span>,
-                    <span class="ident">optional</span>: <span class="bool-val">true</span>,
-                },
-            ],
-        )
-        .<span class="ident">await</span>
-    {
-        <span class="comment">// No valid message received. Keep reading</span>
-        <span class="prelude-val">Ok</span>((<span class="ident">seq</span>, <span class="ident">msgs</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>),
-        <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)),
-    };
+<span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 
-    <span class="kw">if</span> <span class="ident">msgs</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>) {
-        <span class="comment">// Flight1 and flight2 were skipped.</span>
-        <span class="comment">// Parse as flight3.</span>
-        <span class="kw">return</span> <span class="ident">flight3parse</span>(<span class="ident">c</span>, <span class="ident">state</span>, <span class="ident">cache</span>, <span class="ident">cfg</span>).<span class="ident">await</span>;
-    }
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">Flight1</span>;
 
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">msgs</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">HelloVerifyRequest</span>) {
-        <span class="comment">// DTLS 1.2 clients must not assume that the server will use the protocol version</span>
-        <span class="comment">// specified in HelloVerifyRequest message. RFC 6347 Section 4.2.1</span>
-        <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">message</span> {
-            <span class="ident">HandshakeMessage</span>::<span class="ident">HelloVerifyRequest</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span> <span class="ident">Flight</span> <span class="kw">for</span> <span class="ident">Flight1</span> {
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">parse</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">c</span>: <span class="kw-2">&amp;</span><span class="ident">Conn</span>,
+        <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
+        <span class="ident">cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
+        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">Flight</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+        <span class="comment">// HelloVerifyRequest can be skipped by the server,</span>
+        <span class="comment">// so allow ServerHello during flight1 also</span>
+        <span class="kw">let</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">cache</span>
+            .<span class="ident">full_pull_map</span>(
+                <span class="ident">state</span>.<span class="ident">handshake_recv_sequence</span>,
+                <span class="kw-2">&amp;</span>[
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">HelloVerifyRequest</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">true</span>,
+                    },
+                    <span class="ident">HandshakeCachePullRule</span> {
+                        <span class="ident">typ</span>: <span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>,
+                        <span class="ident">epoch</span>: <span class="ident">cfg</span>.<span class="ident">initial_epoch</span>,
+                        <span class="ident">is_client</span>: <span class="bool-val">false</span>,
+                        <span class="ident">optional</span>: <span class="bool-val">true</span>,
+                    },
+                ],
+            )
+            .<span class="ident">await</span>
+        {
+            <span class="comment">// No valid message received. Keep reading</span>
+            <span class="prelude-val">Ok</span>((<span class="ident">seq</span>, <span class="ident">msgs</span>)) <span class="op">=</span><span class="op">&gt;</span> (<span class="ident">seq</span>, <span class="ident">msgs</span>),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)),
+        };
+
+        <span class="kw">if</span> <span class="ident">msgs</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">ServerHello</span>) {
+            <span class="comment">// Flight1 and flight2 were skipped.</span>
+            <span class="comment">// Parse as flight3.</span>
+            <span class="kw">let</span> <span class="ident">flight3</span> <span class="op">=</span> <span class="ident">Flight3</span> {};
+            <span class="kw">return</span> <span class="ident">flight3</span>.<span class="ident">parse</span>(<span class="ident">c</span>, <span class="ident">state</span>, <span class="ident">cache</span>, <span class="ident">cfg</span>).<span class="ident">await</span>;
+        }
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">msgs</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">HandshakeType</span>::<span class="ident">HelloVerifyRequest</span>) {
+            <span class="comment">// DTLS 1.2 clients must not assume that the server will use the protocol version</span>
+            <span class="comment">// specified in HelloVerifyRequest message. RFC 6347 Section 4.2.1</span>
+            <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">message</span> {
+                <span class="ident">HandshakeMessage</span>::<span class="ident">HelloVerifyRequest</span>(<span class="ident">h</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">h</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>((
+                        <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
+                            <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
+                            <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                        }),
+                        <span class="prelude-val">None</span>,
+                    ))
+                }
+            };
+
+            <span class="kw">if</span> <span class="ident">h</span>.<span class="ident">version</span> <span class="op">!</span><span class="op">=</span> <span class="ident">PROTOCOL_VERSION1_0</span> <span class="op">&amp;&amp;</span> <span class="ident">h</span>.<span class="ident">version</span> <span class="op">!</span><span class="op">=</span> <span class="ident">PROTOCOL_VERSION1_2</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>((
                     <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
                         <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
+                        <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">ProtocolVersion</span>,
                     }),
-                    <span class="prelude-val">None</span>,
-                ))
+                    <span class="prelude-val">Some</span>(<span class="ident">ERR_UNSUPPORTED_PROTOCOL_VERSION</span>.<span class="ident">clone</span>()),
+                ));
             }
-        };
 
-        <span class="kw">if</span> <span class="ident">h</span>.<span class="ident">version</span> <span class="op">!</span><span class="op">=</span> <span class="ident">PROTOCOL_VERSION1_0</span> <span class="op">&amp;&amp;</span> <span class="ident">h</span>.<span class="ident">version</span> <span class="op">!</span><span class="op">=</span> <span class="ident">PROTOCOL_VERSION1_2</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>((
+            <span class="ident">state</span>.<span class="ident">cookie</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">h</span>.<span class="ident">cookie</span>);
+            <span class="ident">state</span>.<span class="ident">handshake_recv_sequence</span> <span class="op">=</span> <span class="ident">seq</span>;
+            <span class="prelude-val">Ok</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Flight3</span> {}))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>((
                 <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
                     <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">ProtocolVersion</span>,
+                    <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
                 }),
-                <span class="prelude-val">Some</span>(<span class="ident">ERR_UNSUPPORTED_PROTOCOL_VERSION</span>.<span class="ident">clone</span>()),
+                <span class="prelude-val">None</span>,
+            ))
+        }
+    }
+
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">generate</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">_c</span>: <span class="kw-2">&amp;</span><span class="ident">Conn</span>,
+        <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
+        <span class="ident">_cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
+        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Packet</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+        <span class="comment">//TODO: figure out difference between golang&#39;s atom store and rust atom store</span>
+        <span class="kw">let</span> <span class="ident">zero_epoch</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="ident">state</span>.<span class="ident">local_epoch</span>.<span class="ident">store</span>(<span class="ident">zero_epoch</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+        <span class="ident">state</span>.<span class="ident">remote_epoch</span>.<span class="ident">store</span>(<span class="ident">zero_epoch</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+
+        <span class="ident">state</span>.<span class="ident">named_curve</span> <span class="op">=</span> <span class="ident">DEFAULT_NAMED_CURVE</span>;
+        <span class="ident">state</span>.<span class="ident">cookie</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+        <span class="ident">state</span>.<span class="ident">local_random</span>.<span class="ident">populate</span>();
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">extensions</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Extension</span>::<span class="ident">SupportedSignatureAlgorithms</span>(
+            <span class="ident">ExtensionSupportedSignatureAlgorithms</span> {
+                <span class="ident">signature_hash_algorithms</span>: <span class="ident">cfg</span>.<span class="ident">local_signature_schemes</span>.<span class="ident">clone</span>(),
+            },
+        )];
+
+        <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">local_psk_callback</span>.<span class="ident">is_none</span>() {
+            <span class="ident">extensions</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span>[
+                <span class="ident">Extension</span>::<span class="ident">SupportedEllipticCurves</span>(<span class="ident">ExtensionSupportedEllipticCurves</span> {
+                    <span class="ident">elliptic_curves</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">NamedCurve</span>::<span class="ident">X25519</span>, <span class="ident">NamedCurve</span>::<span class="ident">P256</span>, <span class="ident">NamedCurve</span>::<span class="ident">P384</span>],
+                }),
+                <span class="ident">Extension</span>::<span class="ident">SupportedPointFormats</span>(<span class="ident">ExtensionSupportedPointFormats</span> {
+                    <span class="ident">point_formats</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ELLIPTIC_CURVE_POINT_FORMAT_UNCOMPRESSED</span>],
+                }),
+            ]);
+        }
+
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">local_srtp_protection_profiles</span>.<span class="ident">is_empty</span>() {
+            <span class="ident">extensions</span>.<span class="ident">push</span>(<span class="ident">Extension</span>::<span class="ident">UseSRTP</span>(<span class="ident">ExtensionUseSRTP</span> {
+                <span class="ident">protection_profiles</span>: <span class="ident">cfg</span>.<span class="ident">local_srtp_protection_profiles</span>.<span class="ident">clone</span>(),
+            }));
+        }
+
+        <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">extended_master_secret</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ExtendedMasterSecretType</span>::<span class="ident">Request</span>
+            <span class="op">|</span><span class="op">|</span> <span class="ident">cfg</span>.<span class="ident">extended_master_secret</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ExtendedMasterSecretType</span>::<span class="ident">Require</span>
+        {
+            <span class="ident">extensions</span>.<span class="ident">push</span>(<span class="ident">Extension</span>::<span class="ident">UseExtendedMasterSecret</span>(
+                <span class="ident">ExtensionUseExtendedMasterSecret</span> { <span class="ident">supported</span>: <span class="bool-val">true</span> },
             ));
         }
 
-        <span class="ident">state</span>.<span class="ident">cookie</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">h</span>.<span class="ident">cookie</span>);
-        <span class="ident">state</span>.<span class="ident">handshake_recv_sequence</span> <span class="op">=</span> <span class="ident">seq</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">Flight</span>::<span class="ident">Flight3</span>)
-    } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>((
-            <span class="prelude-val">Some</span>(<span class="ident">Alert</span> {
-                <span class="ident">alert_level</span>: <span class="ident">AlertLevel</span>::<span class="ident">Fatal</span>,
-                <span class="ident">alert_description</span>: <span class="ident">AlertDescription</span>::<span class="ident">InternalError</span>,
-            }),
-            <span class="prelude-val">None</span>,
-        ))
-    }
-}
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">server_name</span>.<span class="ident">is_empty</span>() {
+            <span class="ident">extensions</span>.<span class="ident">push</span>(<span class="ident">Extension</span>::<span class="ident">ServerName</span>(<span class="ident">ExtensionServerName</span> {
+                <span class="ident">server_name</span>: <span class="ident">cfg</span>.<span class="ident">server_name</span>.<span class="ident">clone</span>(),
+            }));
+        }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">flight1generate</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">FlightConn</span><span class="op">&gt;</span>(
-    <span class="ident">_c</span>: <span class="ident">C</span>,
-    <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">State</span>,
-    <span class="ident">_cache</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeCache</span>,
-    <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">HandshakeConfig</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Packet</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Alert</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-    <span class="comment">//TODO: figure out difference between golang&#39;s atom store and rust atom store</span>
-    <span class="kw">let</span> <span class="ident">zero_epoch</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="ident">state</span>.<span class="ident">local_epoch</span>.<span class="ident">store</span>(<span class="ident">zero_epoch</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
-    <span class="ident">state</span>.<span class="ident">remote_epoch</span>.<span class="ident">store</span>(<span class="ident">zero_epoch</span>, <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+        <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Packet</span> {
+            <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
+                <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
+                    <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
+                    ..<span class="ident">Default</span>::<span class="ident">default</span>()
+                },
+                <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
+                    <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
+                    <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">ClientHello</span>(<span class="ident">HandshakeMessageClientHello</span> {
+                        <span class="ident">version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
+                        <span class="ident">random</span>: <span class="ident">state</span>.<span class="ident">local_random</span>.<span class="ident">clone</span>(),
+                        <span class="ident">cookie</span>: <span class="ident">state</span>.<span class="ident">cookie</span>.<span class="ident">clone</span>(),
 
-    <span class="ident">state</span>.<span class="ident">named_curve</span> <span class="op">=</span> <span class="ident">DEFAULT_NAMED_CURVE</span>;
-    <span class="ident">state</span>.<span class="ident">cookie</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-    <span class="ident">state</span>.<span class="ident">local_random</span>.<span class="ident">populate</span>();
-
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">extensions</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Extension</span>::<span class="ident">SupportedSignatureAlgorithms</span>(
-        <span class="ident">ExtensionSupportedSignatureAlgorithms</span> {
-            <span class="ident">signature_hash_algorithms</span>: <span class="ident">cfg</span>.<span class="ident">local_signature_schemes</span>.<span class="ident">clone</span>(),
-        },
-    )];
-
-    <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">local_psk_callback</span>.<span class="ident">is_none</span>() {
-        <span class="ident">extensions</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span>[
-            <span class="ident">Extension</span>::<span class="ident">SupportedEllipticCurves</span>(<span class="ident">ExtensionSupportedEllipticCurves</span> {
-                <span class="ident">elliptic_curves</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">NamedCurve</span>::<span class="ident">X25519</span>, <span class="ident">NamedCurve</span>::<span class="ident">P256</span>, <span class="ident">NamedCurve</span>::<span class="ident">P384</span>],
-            }),
-            <span class="ident">Extension</span>::<span class="ident">SupportedPointFormats</span>(<span class="ident">ExtensionSupportedPointFormats</span> {
-                <span class="ident">point_formats</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ELLIPTIC_CURVE_POINT_FORMAT_UNCOMPRESSED</span>],
-            }),
-        ]);
-    }
-
-    <span class="kw">if</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">local_srtp_protection_profiles</span>.<span class="ident">is_empty</span>() {
-        <span class="ident">extensions</span>.<span class="ident">push</span>(<span class="ident">Extension</span>::<span class="ident">UseSRTP</span>(<span class="ident">ExtensionUseSRTP</span> {
-            <span class="ident">protection_profiles</span>: <span class="ident">cfg</span>.<span class="ident">local_srtp_protection_profiles</span>.<span class="ident">clone</span>(),
-        }));
-    }
-
-    <span class="kw">if</span> <span class="ident">cfg</span>.<span class="ident">extended_master_secret</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ExtendedMasterSecretType</span>::<span class="ident">Request</span>
-        <span class="op">|</span><span class="op">|</span> <span class="ident">cfg</span>.<span class="ident">extended_master_secret</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ExtendedMasterSecretType</span>::<span class="ident">Require</span>
-    {
-        <span class="ident">extensions</span>.<span class="ident">push</span>(<span class="ident">Extension</span>::<span class="ident">UseExtendedMasterSecret</span>(
-            <span class="ident">ExtensionUseExtendedMasterSecret</span> { <span class="ident">supported</span>: <span class="bool-val">true</span> },
-        ));
-    }
-
-    <span class="kw">if</span> <span class="op">!</span><span class="ident">cfg</span>.<span class="ident">server_name</span>.<span class="ident">is_empty</span>() {
-        <span class="ident">extensions</span>.<span class="ident">push</span>(<span class="ident">Extension</span>::<span class="ident">ServerName</span>(<span class="ident">ExtensionServerName</span> {
-            <span class="ident">server_name</span>: <span class="ident">cfg</span>.<span class="ident">server_name</span>.<span class="ident">clone</span>(),
-        }));
-    }
-
-    <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Packet</span> {
-        <span class="ident">record</span>: <span class="ident">RecordLayer</span> {
-            <span class="ident">record_layer_header</span>: <span class="ident">RecordLayerHeader</span> {
-                <span class="ident">protocol_version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
-                ..<span class="ident">Default</span>::<span class="ident">default</span>()
-            },
-            <span class="ident">content</span>: <span class="ident">Content</span>::<span class="ident">Handshake</span>(<span class="ident">Handshake</span> {
-                <span class="ident">handshake_header</span>: <span class="ident">HandshakeHeader</span>::<span class="ident">default</span>(),
-                <span class="ident">handshake_message</span>: <span class="ident">HandshakeMessage</span>::<span class="ident">ClientHello</span>(<span class="ident">HandshakeMessageClientHello</span> {
-                    <span class="ident">version</span>: <span class="ident">PROTOCOL_VERSION1_2</span>,
-                    <span class="ident">random</span>: <span class="ident">state</span>.<span class="ident">local_random</span>.<span class="ident">clone</span>(),
-                    <span class="ident">cookie</span>: <span class="ident">state</span>.<span class="ident">cookie</span>.<span class="ident">clone</span>(),
-
-                    <span class="ident">cipher_suites</span>: <span class="ident">cfg</span>.<span class="ident">local_cipher_suites</span>.<span class="ident">clone</span>(),
-                    <span class="ident">compression_methods</span>: <span class="ident">default_compression_methods</span>(),
-                    <span class="ident">extensions</span>,
+                        <span class="ident">cipher_suites</span>: <span class="ident">cfg</span>.<span class="ident">local_cipher_suites</span>.<span class="ident">clone</span>(),
+                        <span class="ident">compression_methods</span>: <span class="ident">default_compression_methods</span>(),
+                        <span class="ident">extensions</span>,
+                    }),
                 }),
-            }),
-        },
-        <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
-        <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
-    }])
+            },
+            <span class="ident">should_encrypt</span>: <span class="bool-val">false</span>,
+            <span class="ident">reset_local_sequence_number</span>: <span class="bool-val">false</span>,
+        }])
+    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "dtls";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
