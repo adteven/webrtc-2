@@ -298,19 +298,19 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">END_LINE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;\r\n&quot;</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ATTRIBUTE_KEY</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;a=&quot;</span>;
 
-<span class="comment">// ConnectionRole indicates which of the end points should initiate the connection establishment</span>
+<span class="comment">// ConnectionRole indicates which of the end points should initiate the connection establishment</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConnectionRole</span> {
-    <span class="comment">// ConnectionRoleActive indicates the endpoint will initiate an outgoing connection.</span>
+    <span class="comment">// ConnectionRoleActive indicates the endpoint will initiate an outgoing connection.</span>
     <span class="ident">ConnectionRoleActive</span> <span class="op">=</span> <span class="number">1</span>,
 
-    <span class="comment">// ConnectionRolePassive indicates the endpoint will accept an incoming connection.</span>
+    <span class="comment">// ConnectionRolePassive indicates the endpoint will accept an incoming connection.</span>
     <span class="ident">ConnectionRolePassive</span> <span class="op">=</span> <span class="number">2</span>,
 
-    <span class="comment">// ConnectionRoleActpass indicates the endpoint is willing to accept an incoming connection or to initiate an outgoing connection.</span>
+    <span class="comment">// ConnectionRoleActpass indicates the endpoint is willing to accept an incoming connection or to initiate an outgoing connection.</span>
     <span class="ident">ConnectionRoleActpass</span> <span class="op">=</span> <span class="number">3</span>,
 
-    <span class="comment">// ConnectionRoleHoldconn indicates the endpoint does not want the connection to be established for the time being.</span>
+    <span class="comment">// ConnectionRoleHoldconn indicates the endpoint does not want the connection to be established for the time being.</span>
     <span class="ident">ConnectionRoleHoldconn</span> <span class="op">=</span> <span class="number">4</span>,
 }
 
@@ -321,22 +321,22 @@
             <span class="ident">ConnectionRole</span>::<span class="ident">ConnectionRolePassive</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;passive&quot;</span>,
             <span class="ident">ConnectionRole</span>::<span class="ident">ConnectionRoleActpass</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;actpass&quot;</span>,
             <span class="ident">ConnectionRole</span>::<span class="ident">ConnectionRoleHoldconn</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;holdconn&quot;</span>,
-            <span class="comment">//_ =&gt; &quot;Unknown&quot;,</span>
+            <span class="comment">//_ =&gt; &quot;Unknown&quot;,</span>
         };
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">s</span>)
     }
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new_session_id</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
-    <span class="comment">// https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-26#section-5.2.1</span>
-    <span class="comment">// Session ID is recommended to be constructed by generating a 64-bit</span>
-    <span class="comment">// quantity with the highest bit set to zero and the remaining 63-bits</span>
-    <span class="comment">// being cryptographically random.</span>
+    <span class="comment">// https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-26#section-5.2.1</span>
+    <span class="comment">// Session ID is recommended to be constructed by generating a 64-bit</span>
+    <span class="comment">// quantity with the highest bit set to zero and the remaining 63-bits</span>
+    <span class="comment">// being cryptographically random.</span>
     <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">u64</span>::<span class="ident">MAX</span> <span class="op">^</span> (<span class="number">1u64</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">63</span>);
     <span class="ident">rand</span>::<span class="ident">random</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>() <span class="op">&amp;</span> <span class="ident">c</span>
 }
 
-<span class="comment">// Codec represents a codec</span>
+<span class="comment">// Codec represents a codec</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Codec</span> {
     <span class="ident">payload_type</span>: <span class="ident">u8</span>,
@@ -365,7 +365,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">parse_rtpmap</span>(<span class="ident">rtpmap</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Codec</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">parsing_failed</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;could not extract codec from rtpmap&quot;</span>.<span class="ident">to_string</span>());
 
-    <span class="comment">// a=rtpmap:&lt;payload type&gt; &lt;encoding name&gt;/&lt;clock rate&gt;[/&lt;encoding parameters&gt;]</span>
+    <span class="comment">// a=rtpmap:&lt;payload type&gt; &lt;encoding name&gt;/&lt;clock rate&gt;[/&lt;encoding parameters&gt;]</span>
     <span class="kw">let</span> <span class="ident">split</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">rtpmap</span>.<span class="ident">split_whitespace</span>().<span class="ident">collect</span>();
     <span class="kw">if</span> <span class="ident">split</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">2</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parsing_failed</span>);
@@ -403,7 +403,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">parse_fmtp</span>(<span class="ident">fmtp</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Codec</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">parsing_failed</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;could not extract codec from fmtp&quot;</span>.<span class="ident">to_string</span>());
 
-    <span class="comment">// a=fmtp:&lt;format&gt; &lt;format specific parameters&gt;</span>
+    <span class="comment">// a=fmtp:&lt;format&gt; &lt;format specific parameters&gt;</span>
     <span class="kw">let</span> <span class="ident">split</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">fmtp</span>.<span class="ident">split_whitespace</span>().<span class="ident">collect</span>();
     <span class="kw">if</span> <span class="ident">split</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">2</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parsing_failed</span>);
@@ -427,7 +427,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">parse_rtcp_fb</span>(<span class="ident">rtcp_fb</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Codec</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">parsing_failed</span> <span class="op">=</span> <span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;could not extract codec from rtcp-fb&quot;</span>.<span class="ident">to_string</span>());
 
-    <span class="comment">// a=ftcp-fb:&lt;payload type&gt; &lt;RTCP feedback type&gt; [&lt;RTCP feedback parameter&gt;]</span>
+    <span class="comment">// a=ftcp-fb:&lt;payload type&gt; &lt;RTCP feedback type&gt; [&lt;RTCP feedback parameter&gt;]</span>
     <span class="kw">let</span> <span class="ident">split</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">rtcp_fb</span>.<span class="ident">splitn</span>(<span class="number">2</span>, <span class="string">&#39; &#39;</span>).<span class="ident">collect</span>();
     <span class="kw">if</span> <span class="ident">split</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">2</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">parsing_failed</span>);

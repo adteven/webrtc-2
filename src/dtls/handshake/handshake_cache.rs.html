@@ -241,6 +241,7 @@
 <span id="238">238</span>
 <span id="239">239</span>
 <span id="240">240</span>
+<span id="241">241</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">handshake_cache_test</span>;
@@ -272,6 +273,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">optional</span>: <span class="ident">bool</span>,
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">HandshakeCache</span> {
     <span class="ident">cache</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HandshakeCacheItem</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }

@@ -98,12 +98,12 @@
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
-<span class="comment">// Information describes the &quot;i=&quot; field which provides textual information</span>
-<span class="comment">// about the session.</span>
+<span class="comment">// Information describes the &quot;i=&quot; field which provides textual information</span>
+<span class="comment">// about the session.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Information</span> <span class="op">=</span> <span class="ident">String</span>;
 
-<span class="comment">// ConnectionInformation defines the representation for the &quot;c=&quot; field</span>
-<span class="comment">// containing connection data.</span>
+<span class="comment">// ConnectionInformation defines the representation for the &quot;c=&quot; field</span>
+<span class="comment">// containing connection data.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConnectionInformation</span> {
     <span class="kw">pub</span> <span class="ident">network_type</span>: <span class="ident">String</span>,
@@ -121,7 +121,7 @@
     }
 }
 
-<span class="comment">// Address desribes a structured address token from within the &quot;c=&quot; field.</span>
+<span class="comment">// Address desribes a structured address token from within the &quot;c=&quot; field.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Address</span> {
     <span class="kw">pub</span> <span class="ident">address</span>: <span class="ident">String</span>,
@@ -142,8 +142,8 @@
     }
 }
 
-<span class="comment">// Bandwidth describes an optional field which denotes the proposed bandwidth</span>
-<span class="comment">// to be used by the session or media.</span>
+<span class="comment">// Bandwidth describes an optional field which denotes the proposed bandwidth</span>
+<span class="comment">// to be used by the session or media.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Bandwidth</span> {
     <span class="kw">pub</span> <span class="ident">experimental</span>: <span class="ident">bool</span>,
@@ -158,11 +158,11 @@
     }
 }
 
-<span class="comment">// EncryptionKey describes the &quot;k=&quot; which conveys encryption key information.</span>
+<span class="comment">// EncryptionKey describes the &quot;k=&quot; which conveys encryption key information.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">EncryptionKey</span> <span class="op">=</span> <span class="ident">String</span>;
 
-<span class="comment">// Attribute describes the &quot;a=&quot; field which represents the primary means for</span>
-<span class="comment">// extending SDP.</span>
+<span class="comment">// Attribute describes the &quot;a=&quot; field which represents the primary means for</span>
+<span class="comment">// extending SDP.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Attribute</span> {
     <span class="kw">pub</span> <span class="ident">key</span>: <span class="ident">String</span>,
@@ -180,12 +180,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Attribute</span> {
-    <span class="comment">// constructs a new attribute</span>
+    <span class="comment">// constructs a new attribute</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">key</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">Attribute</span> { <span class="ident">key</span>, <span class="ident">value</span> }
     }
 
-    <span class="comment">// IsICECandidate returns true if the attribute key equals &quot;candidate&quot;.</span>
+    <span class="comment">// IsICECandidate returns true if the attribute key equals &quot;candidate&quot;.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_ice_candidate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">key</span>.<span class="ident">as_str</span>() <span class="op">=</span><span class="op">=</span> <span class="string">&quot;candidate&quot;</span>
     }

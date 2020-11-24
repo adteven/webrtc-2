@@ -128,7 +128,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">extmap_test</span>;
 
-<span class="comment">// Default ext values</span>
+<span class="comment">// Default ext values</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEF_EXT_MAP_VALUE_ABS_SEND_TIME</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEF_EXT_MAP_VALUE_TRANSPORT_CC</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEF_EXT_MAP_VALUE_SDES_MID</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3</span>;
@@ -140,7 +140,7 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SDES_MID_URI</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;urn:ietf:params:rtp-hdrext:sdes:mid&quot;</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SDES_RTP_STREAM_ID_URI</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id&quot;</span>;
 
-<span class="comment">//ExtMap represents the activation of a single RTP header extension</span>
+<span class="comment">//ExtMap represents the activation of a single RTP header extension</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ExtMap</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">value</span>: <span class="ident">isize</span>,
@@ -170,7 +170,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ExtMap</span> {
-    <span class="comment">//Clone converts this object to an Attribute</span>
+    <span class="comment">//Clone converts this object to an Attribute</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Attribute</span> {
         <span class="ident">Attribute</span> {
             <span class="ident">key</span>: <span class="string">&quot;extmap&quot;</span>.<span class="ident">to_string</span>(),
@@ -178,7 +178,7 @@
         }
     }
 
-    <span class="comment">//Unmarshal creates an Extmap from a string</span>
+    <span class="comment">//Unmarshal creates an Extmap from a string</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unmarshal</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">io</span>::<span class="ident">BufRead</span><span class="op">&gt;</span>(<span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">R</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">line</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
         <span class="ident">reader</span>.<span class="ident">read_line</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">line</span>)<span class="question-mark">?</span>;
@@ -225,7 +225,7 @@
         })
     }
 
-    <span class="comment">//Marshal creates a string from an ExtMap</span>
+    <span class="comment">//Marshal creates a string from an ExtMap</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">marshal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="string">&quot;extmap:&quot;</span>.<span class="ident">to_string</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">to_string</span>().<span class="ident">as_str</span>()
     }

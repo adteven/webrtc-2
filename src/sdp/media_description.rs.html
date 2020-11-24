@@ -222,45 +222,45 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">common_description</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">extmap</span>::<span class="kw-2">*</span>;
 
-<span class="comment">// Constants for extmap key</span>
+<span class="comment">// Constants for extmap key</span>
 <span class="kw">const</span> <span class="ident">EXT_MAP_VALUE_TRANSPORT_CC_KEY</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="number">3</span>;
 <span class="kw">const</span> <span class="ident">EXT_MAP_VALUE_TRANSPORT_CC_URI</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span>
     <span class="string">&quot;http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01&quot;</span>;
 
-<span class="comment">// MediaDescription represents a media type.</span>
-<span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
+<span class="comment">// MediaDescription represents a media type.</span>
+<span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MediaDescription</span> {
-    <span class="comment">// m=&lt;media&gt; &lt;port&gt;/&lt;number of ports&gt; &lt;proto&gt; &lt;fmt&gt; ...</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
+    <span class="comment">// m=&lt;media&gt; &lt;port&gt;/&lt;number of ports&gt; &lt;proto&gt; &lt;fmt&gt; ...</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
     <span class="kw">pub</span> <span class="ident">media_name</span>: <span class="ident">MediaName</span>,
 
-    <span class="comment">// i=&lt;session description&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.4</span>
+    <span class="comment">// i=&lt;session description&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.4</span>
     <span class="kw">pub</span> <span class="ident">media_title</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Information</span><span class="op">&gt;</span>,
 
-    <span class="comment">// c=&lt;nettype&gt; &lt;addrtype&gt; &lt;connection-address&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.7</span>
+    <span class="comment">// c=&lt;nettype&gt; &lt;addrtype&gt; &lt;connection-address&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.7</span>
     <span class="kw">pub</span> <span class="ident">connection_information</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ConnectionInformation</span><span class="op">&gt;</span>,
 
-    <span class="comment">// b=&lt;bwtype&gt;:&lt;bandwidth&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.8</span>
+    <span class="comment">// b=&lt;bwtype&gt;:&lt;bandwidth&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.8</span>
     <span class="kw">pub</span> <span class="ident">bandwidth</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Bandwidth</span><span class="op">&gt;</span>,
 
-    <span class="comment">// k=&lt;method&gt;</span>
-    <span class="comment">// k=&lt;method&gt;:&lt;encryption key&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.12</span>
+    <span class="comment">// k=&lt;method&gt;</span>
+    <span class="comment">// k=&lt;method&gt;:&lt;encryption key&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.12</span>
     <span class="kw">pub</span> <span class="ident">encryption_key</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EncryptionKey</span><span class="op">&gt;</span>,
 
-    <span class="comment">// Attributes are the primary means for extending SDP.  Attributes may</span>
-    <span class="comment">// be defined to be used as &quot;session-level&quot; attributes, &quot;media-level&quot;</span>
-    <span class="comment">// attributes, or both.</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.12</span>
+    <span class="comment">// Attributes are the primary means for extending SDP.  Attributes may</span>
+    <span class="comment">// be defined to be used as &quot;session-level&quot; attributes, &quot;media-level&quot;</span>
+    <span class="comment">// attributes, or both.</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.12</span>
     <span class="kw">pub</span> <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Attribute</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MediaDescription</span> {
-    <span class="comment">// Attribute returns the value of an attribute and if it exists</span>
+    <span class="comment">// Attribute returns the value of an attribute and if it exists</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attribute</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span> {
             <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">key</span> <span class="op">=</span><span class="op">=</span> <span class="ident">key</span> {
@@ -270,11 +270,11 @@
         <span class="prelude-val">None</span>
     }
 
-    <span class="comment">// New JSEPMediaDescription creates a new MediaName with</span>
-    <span class="comment">// some settings that are required by the JSEP spec.</span>
-    <span class="comment">// TODO: use codec_prefs</span>
+    <span class="comment">// New JSEPMediaDescription creates a new MediaName with</span>
+    <span class="comment">// some settings that are required by the JSEP spec.</span>
+    <span class="comment">// TODO: use codec_prefs</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">codec_type</span>: <span class="ident">String</span>, <span class="ident">_codec_prefs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="comment">// TODO: handle codec_prefs</span>
+        <span class="comment">// TODO: handle codec_prefs</span>
         <span class="ident">MediaDescription</span> {
             <span class="ident">media_name</span>: <span class="ident">MediaName</span> {
                 <span class="ident">media</span>: <span class="ident">codec_type</span>,
@@ -306,25 +306,25 @@
         }
     }
 
-    <span class="comment">// WithPropertyAttribute adds a property attribute &#39;a=key&#39; to the media description</span>
+    <span class="comment">// WithPropertyAttribute adds a property attribute &#39;a=key&#39; to the media description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_property_attribute</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">Attribute</span>::<span class="ident">new</span>(<span class="ident">key</span>, <span class="prelude-val">None</span>));
         <span class="self">self</span>
     }
 
-    <span class="comment">// WithValueAttribute adds a value attribute &#39;a=key:value&#39; to the media description</span>
+    <span class="comment">// WithValueAttribute adds a value attribute &#39;a=key:value&#39; to the media description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_value_attribute</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">Attribute</span>::<span class="ident">new</span>(<span class="ident">key</span>, <span class="prelude-val">Some</span>(<span class="ident">value</span>)));
         <span class="self">self</span>
     }
 
-    <span class="comment">// WithICECredentials adds ICE credentials to the media description</span>
+    <span class="comment">// WithICECredentials adds ICE credentials to the media description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_ice_credentials</span>(<span class="self">self</span>, <span class="ident">username</span>: <span class="ident">String</span>, <span class="ident">password</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">with_value_attribute</span>(<span class="string">&quot;ice-ufrag&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">username</span>)
             .<span class="ident">with_value_attribute</span>(<span class="string">&quot;ice-pwd&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">password</span>)
     }
 
-    <span class="comment">// WithCodec adds codec information to the media description</span>
+    <span class="comment">// WithCodec adds codec information to the media description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_codec</span>(
         <span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">payload_type</span>: <span class="ident">u8</span>,
@@ -347,7 +347,7 @@
         }
     }
 
-    <span class="comment">// WithMediaSource adds media source information to the media description</span>
+    <span class="comment">// WithMediaSource adds media source information to the media description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_media_source</span>(
         <span class="self">self</span>,
         <span class="ident">ssrc</span>: <span class="ident">u32</span>,
@@ -356,15 +356,15 @@
         <span class="ident">label</span>: <span class="ident">String</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.
-            <span class="ident">with_value_attribute</span>(<span class="string">&quot;ssrc&quot;</span>.<span class="ident">to_string</span>(), <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} cname:{}&quot;</span>, <span class="ident">ssrc</span>, <span class="ident">cname</span>)). <span class="comment">// Deprecated but not phased out?</span>
+            <span class="ident">with_value_attribute</span>(<span class="string">&quot;ssrc&quot;</span>.<span class="ident">to_string</span>(), <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} cname:{}&quot;</span>, <span class="ident">ssrc</span>, <span class="ident">cname</span>)). <span class="comment">// Deprecated but not phased out?</span>
             <span class="ident">with_value_attribute</span>(<span class="string">&quot;ssrc&quot;</span>.<span class="ident">to_string</span>(), <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} msid:{} {}&quot;</span>, <span class="ident">ssrc</span>, <span class="ident">stream_label</span>, <span class="ident">label</span>)).
-            <span class="ident">with_value_attribute</span>(<span class="string">&quot;ssrc&quot;</span>.<span class="ident">to_string</span>(), <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} mslabel:{}&quot;</span>, <span class="ident">ssrc</span>, <span class="ident">stream_label</span>)). <span class="comment">// Deprecated but not phased out?</span>
+            <span class="ident">with_value_attribute</span>(<span class="string">&quot;ssrc&quot;</span>.<span class="ident">to_string</span>(), <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} mslabel:{}&quot;</span>, <span class="ident">ssrc</span>, <span class="ident">stream_label</span>)). <span class="comment">// Deprecated but not phased out?</span>
             <span class="ident">with_value_attribute</span>(<span class="string">&quot;ssrc&quot;</span>.<span class="ident">to_string</span>(), <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} label:{}&quot;</span>, <span class="ident">ssrc</span>, <span class="ident">label</span>))
-        <span class="comment">// Deprecated but not phased out?</span>
+        <span class="comment">// Deprecated but not phased out?</span>
     }
 
-    <span class="comment">// WithCandidate adds an ICE candidate to the media description</span>
-    <span class="comment">// Deprecated: use WithICECandidate instead</span>
+    <span class="comment">// WithCandidate adds an ICE candidate to the media description</span>
+    <span class="comment">// Deprecated: use WithICECandidate instead</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_candidate</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">with_value_attribute</span>(<span class="string">&quot;candidate&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">value</span>)
     }
@@ -373,7 +373,7 @@
         <span class="self">self</span>.<span class="ident">with_property_attribute</span>(<span class="ident">e</span>.<span class="ident">marshal</span>())
     }
 
-    <span class="comment">// WithTransportCCExtMap adds an extmap to the media description</span>
+    <span class="comment">// WithTransportCCExtMap adds an extmap to the media description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_transport_cc_extmap</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">uri</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Url</span>::<span class="ident">parse</span>(<span class="ident">EXT_MAP_VALUE_TRANSPORT_CC_URI</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">uri</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">uri</span>),
@@ -390,10 +390,10 @@
     }
 }
 
-<span class="comment">// RangedPort supports special format for the media field &quot;m=&quot; port value. If</span>
-<span class="comment">// it may be necessary to specify multiple transport ports, the protocol allows</span>
-<span class="comment">// to write it as: &lt;port&gt;/&lt;number of ports&gt; where number of ports is a an</span>
-<span class="comment">// offsetting range.</span>
+<span class="comment">// RangedPort supports special format for the media field &quot;m=&quot; port value. If</span>
+<span class="comment">// it may be necessary to specify multiple transport ports, the protocol allows</span>
+<span class="comment">// to write it as: &lt;port&gt;/&lt;number of ports&gt; where number of ports is a an</span>
+<span class="comment">// offsetting range.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangedPort</span> {
     <span class="kw">pub</span> <span class="ident">value</span>: <span class="ident">isize</span>,
@@ -410,7 +410,7 @@
     }
 }
 
-<span class="comment">// MediaName describes the &quot;m=&quot; field storage structure.</span>
+<span class="comment">// MediaName describes the &quot;m=&quot; field storage structure.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MediaName</span> {
     <span class="kw">pub</span> <span class="ident">media</span>: <span class="ident">String</span>,

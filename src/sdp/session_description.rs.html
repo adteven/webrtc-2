@@ -1365,7 +1365,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">session_description_test</span>;
 
-<span class="comment">// Constants for SDP attributes used in JSEP</span>
+<span class="comment">// Constants for SDP attributes used in JSEP</span>
 <span class="kw">const</span> <span class="ident">ATTR_KEY_IDENTITY</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;identity&quot;</span>;
 <span class="kw">const</span> <span class="ident">ATTR_KEY_GROUP</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;group&quot;</span>;
 <span class="kw">const</span> <span class="ident">ATTR_KEY_SSRC</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;ssrc&quot;</span>;
@@ -1383,18 +1383,18 @@
 <span class="kw">const</span> <span class="ident">ATTR_KEY_SEND_RECV</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;sendrecv&quot;</span>;
 <span class="kw">const</span> <span class="ident">ATTR_KEY_EXT_MAP</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;extmap&quot;</span>;
 
-<span class="comment">// Constants for semantic tokens used in JSEP</span>
+<span class="comment">// Constants for semantic tokens used in JSEP</span>
 <span class="kw">const</span> <span class="ident">SEMANTIC_TOKEN_LIP_SYNCHRONIZATION</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;LS&quot;</span>;
 <span class="kw">const</span> <span class="ident">SEMANTIC_TOKEN_FLOW_IDENTIFICATION</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;FID&quot;</span>;
 <span class="kw">const</span> <span class="ident">SEMANTIC_TOKEN_FORWARD_ERROR_CORRECTION</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;FEC&quot;</span>;
 <span class="kw">const</span> <span class="ident">SEMANTIC_TOKEN_WEB_RTCMEDIA_STREAMS</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;WMS&quot;</span>;
 
-<span class="comment">// Version describes the value provided by the &quot;v=&quot; field which gives</span>
-<span class="comment">// the version of the Session Description Protocol.</span>
+<span class="comment">// Version describes the value provided by the &quot;v=&quot; field which gives</span>
+<span class="comment">// the version of the Session Description Protocol.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Version</span> <span class="op">=</span> <span class="ident">isize</span>;
 
-<span class="comment">// Origin defines the structure for the &quot;o=&quot; field which provides the</span>
-<span class="comment">// originator of the session plus a session identifier and version number.</span>
+<span class="comment">// Origin defines the structure for the &quot;o=&quot; field which provides the</span>
+<span class="comment">// originator of the session plus a session identifier and version number.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Origin</span> {
     <span class="ident">username</span>: <span class="ident">String</span>,
@@ -1433,22 +1433,22 @@
     }
 }
 
-<span class="comment">// SessionName describes a structured representations for the &quot;s=&quot; field</span>
-<span class="comment">// and is the textual session name.</span>
+<span class="comment">// SessionName describes a structured representations for the &quot;s=&quot; field</span>
+<span class="comment">// and is the textual session name.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SessionName</span> <span class="op">=</span> <span class="ident">String</span>;
 
-<span class="comment">// EmailAddress describes a structured representations for the &quot;e=&quot; line</span>
-<span class="comment">// which specifies email contact information for the person responsible for</span>
-<span class="comment">// the conference.</span>
+<span class="comment">// EmailAddress describes a structured representations for the &quot;e=&quot; line</span>
+<span class="comment">// which specifies email contact information for the person responsible for</span>
+<span class="comment">// the conference.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">EmailAddress</span> <span class="op">=</span> <span class="ident">String</span>;
 
-<span class="comment">// PhoneNumber describes a structured representations for the &quot;p=&quot; line</span>
-<span class="comment">// specify phone contact information for the person responsible for the</span>
-<span class="comment">// conference.</span>
+<span class="comment">// PhoneNumber describes a structured representations for the &quot;p=&quot; line</span>
+<span class="comment">// specify phone contact information for the person responsible for the</span>
+<span class="comment">// conference.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PhoneNumber</span> <span class="op">=</span> <span class="ident">String</span>;
 
-<span class="comment">// TimeZone defines the structured object for &quot;z=&quot; line which describes</span>
-<span class="comment">// repeated sessions scheduling.</span>
+<span class="comment">// TimeZone defines the structured object for &quot;z=&quot; line which describes</span>
+<span class="comment">// repeated sessions scheduling.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TimeZone</span> {
     <span class="ident">adjustment_time</span>: <span class="ident">u64</span>,
@@ -1461,22 +1461,22 @@
     }
 }
 
-<span class="comment">// TimeDescription describes &quot;t=&quot;, &quot;r=&quot; fields of the session description</span>
-<span class="comment">// which are used to specify the start and stop times for a session as well as</span>
-<span class="comment">// repeat intervals and durations for the scheduled session.</span>
+<span class="comment">// TimeDescription describes &quot;t=&quot;, &quot;r=&quot; fields of the session description</span>
+<span class="comment">// which are used to specify the start and stop times for a session as well as</span>
+<span class="comment">// repeat intervals and durations for the scheduled session.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TimeDescription</span> {
-    <span class="comment">// t=&lt;start-time&gt; &lt;stop-time&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.9</span>
+    <span class="comment">// t=&lt;start-time&gt; &lt;stop-time&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.9</span>
     <span class="ident">timing</span>: <span class="ident">Timing</span>,
 
-    <span class="comment">// r=&lt;repeat interval&gt; &lt;active duration&gt; &lt;offsets from start-time&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.10</span>
+    <span class="comment">// r=&lt;repeat interval&gt; &lt;active duration&gt; &lt;offsets from start-time&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.10</span>
     <span class="ident">repeat_times</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RepeatTime</span><span class="op">&gt;</span>,
 }
 
-<span class="comment">// Timing defines the &quot;t=&quot; field&#39;s structured representation for the start and</span>
-<span class="comment">// stop times.</span>
+<span class="comment">// Timing defines the &quot;t=&quot; field&#39;s structured representation for the start and</span>
+<span class="comment">// stop times.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Timing</span> {
     <span class="ident">start_time</span>: <span class="ident">u64</span>,
@@ -1489,8 +1489,8 @@
     }
 }
 
-<span class="comment">// RepeatTime describes the &quot;r=&quot; fields of the session description which</span>
-<span class="comment">// represents the intervals and durations for repeated scheduled sessions.</span>
+<span class="comment">// RepeatTime describes the &quot;r=&quot; fields of the session description which</span>
+<span class="comment">// represents the intervals and durations for repeated scheduled sessions.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RepeatTime</span> {
     <span class="ident">interval</span>: <span class="ident">i64</span>,
@@ -1510,75 +1510,75 @@
     }
 }
 
-<span class="comment">// SessionDescription is a a well-defined format for conveying sufficient</span>
-<span class="comment">// information to discover and participate in a multimedia session.</span>
+<span class="comment">// SessionDescription is a a well-defined format for conveying sufficient</span>
+<span class="comment">// information to discover and participate in a multimedia session.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SessionDescription</span> {
-    <span class="comment">// v=0</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.1</span>
+    <span class="comment">// v=0</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.1</span>
     <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">Version</span>,
 
-    <span class="comment">// o=&lt;username&gt; &lt;sess-id&gt; &lt;sess-version&gt; &lt;nettype&gt; &lt;addrtype&gt; &lt;unicast-address&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.2</span>
+    <span class="comment">// o=&lt;username&gt; &lt;sess-id&gt; &lt;sess-version&gt; &lt;nettype&gt; &lt;addrtype&gt; &lt;unicast-address&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.2</span>
     <span class="kw">pub</span> <span class="ident">origin</span>: <span class="ident">Origin</span>,
 
-    <span class="comment">// s=&lt;session name&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.3</span>
+    <span class="comment">// s=&lt;session name&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.3</span>
     <span class="kw">pub</span> <span class="ident">session_name</span>: <span class="ident">SessionName</span>,
 
-    <span class="comment">// i=&lt;session description&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.4</span>
+    <span class="comment">// i=&lt;session description&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.4</span>
     <span class="kw">pub</span> <span class="ident">session_information</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Information</span><span class="op">&gt;</span>,
 
-    <span class="comment">// u=&lt;uri&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.5</span>
+    <span class="comment">// u=&lt;uri&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.5</span>
     <span class="kw">pub</span> <span class="ident">uri</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Url</span><span class="op">&gt;</span>,
 
-    <span class="comment">// e=&lt;email-address&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.6</span>
+    <span class="comment">// e=&lt;email-address&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.6</span>
     <span class="kw">pub</span> <span class="ident">email_address</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EmailAddress</span><span class="op">&gt;</span>,
 
-    <span class="comment">// p=&lt;phone-number&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.6</span>
+    <span class="comment">// p=&lt;phone-number&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.6</span>
     <span class="kw">pub</span> <span class="ident">phone_number</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PhoneNumber</span><span class="op">&gt;</span>,
 
-    <span class="comment">// c=&lt;nettype&gt; &lt;addrtype&gt; &lt;connection-address&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.7</span>
+    <span class="comment">// c=&lt;nettype&gt; &lt;addrtype&gt; &lt;connection-address&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.7</span>
     <span class="kw">pub</span> <span class="ident">connection_information</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ConnectionInformation</span><span class="op">&gt;</span>,
 
-    <span class="comment">// b=&lt;bwtype&gt;:&lt;bandwidth&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.8</span>
+    <span class="comment">// b=&lt;bwtype&gt;:&lt;bandwidth&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.8</span>
     <span class="kw">pub</span> <span class="ident">bandwidth</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Bandwidth</span><span class="op">&gt;</span>,
 
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.9</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.10</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.9</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.10</span>
     <span class="kw">pub</span> <span class="ident">time_descriptions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TimeDescription</span><span class="op">&gt;</span>,
 
-    <span class="comment">// z=&lt;adjustment time&gt; &lt;offset&gt; &lt;adjustment time&gt; &lt;offset&gt; ...</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.11</span>
+    <span class="comment">// z=&lt;adjustment time&gt; &lt;offset&gt; &lt;adjustment time&gt; &lt;offset&gt; ...</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.11</span>
     <span class="kw">pub</span> <span class="ident">time_zones</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TimeZone</span><span class="op">&gt;</span>,
 
-    <span class="comment">// k=&lt;method&gt;</span>
-    <span class="comment">// k=&lt;method&gt;:&lt;encryption key&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.12</span>
+    <span class="comment">// k=&lt;method&gt;</span>
+    <span class="comment">// k=&lt;method&gt;:&lt;encryption key&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.12</span>
     <span class="kw">pub</span> <span class="ident">encryption_key</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EncryptionKey</span><span class="op">&gt;</span>,
 
-    <span class="comment">// a=&lt;attribute&gt;</span>
-    <span class="comment">// a=&lt;attribute&gt;:&lt;value&gt;</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.13</span>
+    <span class="comment">// a=&lt;attribute&gt;</span>
+    <span class="comment">// a=&lt;attribute&gt;:&lt;value&gt;</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.13</span>
     <span class="kw">pub</span> <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Attribute</span><span class="op">&gt;</span>,
 
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
     <span class="kw">pub</span> <span class="ident">media_descriptions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MediaDescription</span><span class="op">&gt;</span>,
 }
 
-<span class="comment">// Reset cleans the SessionDescription, and sets all fields back to their default values</span>
+<span class="comment">// Reset cleans the SessionDescription, and sets all fields back to their default values</span>
 <span class="kw">impl</span> <span class="ident">SessionDescription</span> {
-    <span class="comment">// API to match draft-ietf-rtcweb-jsep</span>
-    <span class="comment">// Move to webrtc or its own package?</span>
+    <span class="comment">// API to match draft-ietf-rtcweb-jsep</span>
+    <span class="comment">// Move to webrtc or its own package?</span>
 
-    <span class="comment">// NewJSEPSessionDescription creates a new SessionDescription with</span>
-    <span class="comment">// some settings that are required by the JSEP spec.</span>
+    <span class="comment">// NewJSEPSessionDescription creates a new SessionDescription with</span>
+    <span class="comment">// some settings that are required by the JSEP spec.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_jsep_session_description</span>(<span class="ident">identity</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">SessionDescription</span> {
             <span class="ident">version</span>: <span class="number">0</span>,
@@ -1609,7 +1609,7 @@
             }],
             <span class="ident">time_zones</span>: <span class="macro">vec</span><span class="macro">!</span>[],
             <span class="ident">encryption_key</span>: <span class="prelude-val">None</span>,
-            <span class="ident">attributes</span>: <span class="macro">vec</span><span class="macro">!</span>[], <span class="comment">// TODO: implement trickle ICE</span>
+            <span class="ident">attributes</span>: <span class="macro">vec</span><span class="macro">!</span>[], <span class="comment">// TODO: implement trickle ICE</span>
             <span class="ident">media_descriptions</span>: <span class="macro">vec</span><span class="macro">!</span>[],
         };
 
@@ -1620,24 +1620,24 @@
         }
     }
 
-    <span class="comment">// WithPropertyAttribute adds a property attribute &#39;a=key&#39; to the session description</span>
+    <span class="comment">// WithPropertyAttribute adds a property attribute &#39;a=key&#39; to the session description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_property_attribute</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">Attribute</span>::<span class="ident">new</span>(<span class="ident">key</span>, <span class="prelude-val">None</span>));
         <span class="self">self</span>
     }
 
-    <span class="comment">// WithValueAttribute adds a value attribute &#39;a=key:value&#39; to the session description</span>
+    <span class="comment">// WithValueAttribute adds a value attribute &#39;a=key:value&#39; to the session description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_value_attribute</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">Attribute</span>::<span class="ident">new</span>(<span class="ident">key</span>, <span class="prelude-val">Some</span>(<span class="ident">value</span>)));
         <span class="self">self</span>
     }
 
-    <span class="comment">// WithFingerprint adds a fingerprint to the session description</span>
+    <span class="comment">// WithFingerprint adds a fingerprint to the session description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_fingerprint</span>(<span class="self">self</span>, <span class="ident">algorithm</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">with_value_attribute</span>(<span class="string">&quot;fingerprint&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">algorithm</span> <span class="op">+</span> <span class="string">&quot; &quot;</span> <span class="op">+</span> <span class="ident">value</span>.<span class="ident">as_str</span>())
     }
 
-    <span class="comment">// WithMedia adds a media description to the session description</span>
+    <span class="comment">// WithMedia adds a media description to the session description</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_media</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">md</span>: <span class="ident">MediaDescription</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">media_descriptions</span>.<span class="ident">push</span>(<span class="ident">md</span>);
         <span class="self">self</span>
@@ -1668,7 +1668,7 @@
         <span class="ident">codecs</span>
     }
 
-    <span class="comment">// get_codec_for_payload_type scans the SessionDescription for the given payload type and returns the codec</span>
+    <span class="comment">// get_codec_for_payload_type scans the SessionDescription for the given payload type and returns the codec</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_codec_for_payload_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">payload_type</span>: <span class="ident">u8</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Codec</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">codecs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">build_codec_map</span>();
 
@@ -1679,8 +1679,8 @@
         }
     }
 
-    <span class="comment">// get_payload_type_for_codec scans the SessionDescription for a codec that matches the provided codec</span>
-    <span class="comment">// as closely as possible and returns its payload type</span>
+    <span class="comment">// get_payload_type_for_codec scans the SessionDescription for a codec that matches the provided codec</span>
+    <span class="comment">// as closely as possible and returns its payload type</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_payload_type_for_codec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wanted</span>: <span class="kw-2">&amp;</span><span class="ident">Codec</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">codecs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">build_codec_map</span>();
 
@@ -1692,37 +1692,37 @@
 
         <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;codec not found&quot;</span>.<span class="ident">to_string</span>()))
     }
-    <span class="comment">// Marshal takes a SDP struct to text</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5</span>
-    <span class="comment">// Session description</span>
-    <span class="comment">//    v=  (protocol version)</span>
-    <span class="comment">//    o=  (originator and session identifier)</span>
-    <span class="comment">//    s=  (session name)</span>
-    <span class="comment">//    i=* (session information)</span>
-    <span class="comment">//    u=* (URI of description)</span>
-    <span class="comment">//    e=* (email address)</span>
-    <span class="comment">//    p=* (phone number)</span>
-    <span class="comment">//    c=* (connection information -- not required if included in</span>
-    <span class="comment">//         all media)</span>
-    <span class="comment">//    b=* (zero or more bandwidth information lines)</span>
-    <span class="comment">//    One or more time descriptions (&quot;t=&quot; and &quot;r=&quot; lines; see below)</span>
-    <span class="comment">//    z=* (time zone adjustments)</span>
-    <span class="comment">//    k=* (encryption key)</span>
-    <span class="comment">//    a=* (zero or more session attribute lines)</span>
-    <span class="comment">//    Zero or more media descriptions</span>
-    <span class="comment">//</span>
-    <span class="comment">// Time description</span>
-    <span class="comment">//    t=  (time the session is active)</span>
-    <span class="comment">//    r=* (zero or more repeat times)</span>
-    <span class="comment">//</span>
-    <span class="comment">// Media description, if present</span>
-    <span class="comment">//    m=  (media name and transport address)</span>
-    <span class="comment">//    i=* (media title)</span>
-    <span class="comment">//    c=* (connection information -- optional if included at</span>
-    <span class="comment">//         session level)</span>
-    <span class="comment">//    b=* (zero or more bandwidth information lines)</span>
-    <span class="comment">//    k=* (encryption key)</span>
-    <span class="comment">//    a=* (zero or more media attribute lines)</span>
+    <span class="comment">// Marshal takes a SDP struct to text</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5</span>
+    <span class="comment">// Session description</span>
+    <span class="comment">//    v=  (protocol version)</span>
+    <span class="comment">//    o=  (originator and session identifier)</span>
+    <span class="comment">//    s=  (session name)</span>
+    <span class="comment">//    i=* (session information)</span>
+    <span class="comment">//    u=* (URI of description)</span>
+    <span class="comment">//    e=* (email address)</span>
+    <span class="comment">//    p=* (phone number)</span>
+    <span class="comment">//    c=* (connection information -- not required if included in</span>
+    <span class="comment">//         all media)</span>
+    <span class="comment">//    b=* (zero or more bandwidth information lines)</span>
+    <span class="comment">//    One or more time descriptions (&quot;t=&quot; and &quot;r=&quot; lines; see below)</span>
+    <span class="comment">//    z=* (time zone adjustments)</span>
+    <span class="comment">//    k=* (encryption key)</span>
+    <span class="comment">//    a=* (zero or more session attribute lines)</span>
+    <span class="comment">//    Zero or more media descriptions</span>
+    <span class="comment">//</span>
+    <span class="comment">// Time description</span>
+    <span class="comment">//    t=  (time the session is active)</span>
+    <span class="comment">//    r=* (zero or more repeat times)</span>
+    <span class="comment">//</span>
+    <span class="comment">// Media description, if present</span>
+    <span class="comment">//    m=  (media name and transport address)</span>
+    <span class="comment">//    i=* (media title)</span>
+    <span class="comment">//    c=* (connection information -- optional if included at</span>
+    <span class="comment">//         session level)</span>
+    <span class="comment">//    b=* (zero or more bandwidth information lines)</span>
+    <span class="comment">//    k=* (encryption key)</span>
+    <span class="comment">//    a=* (zero or more media attribute lines)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">marshal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
 
@@ -1781,80 +1781,80 @@
         <span class="ident">result</span>
     }
 
-    <span class="comment">// Unmarshal is the primary function that deserializes the session description</span>
-    <span class="comment">// message and stores it inside of a structured SessionDescription object.</span>
-    <span class="comment">//</span>
-    <span class="comment">// The States Transition Table describes the computation flow between functions</span>
-    <span class="comment">// (namely s1, s2, s3, ...) for a parsing procedure that complies with the</span>
-    <span class="comment">// specifications laid out by the rfc4566#section-5 as well as by JavaScript</span>
-    <span class="comment">// Session Establishment Protocol draft. Links:</span>
-    <span class="comment">// 		https://tools.ietf.org/html/rfc4566#section-5</span>
-    <span class="comment">// 		https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-24</span>
-    <span class="comment">//</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5</span>
-    <span class="comment">// Session description</span>
-    <span class="comment">//    v=  (protocol version)</span>
-    <span class="comment">//    o=  (originator and session identifier)</span>
-    <span class="comment">//    s=  (session name)</span>
-    <span class="comment">//    i=* (session information)</span>
-    <span class="comment">//    u=* (URI of description)</span>
-    <span class="comment">//    e=* (email address)</span>
-    <span class="comment">//    p=* (phone number)</span>
-    <span class="comment">//    c=* (connection information -- not required if included in</span>
-    <span class="comment">//         all media)</span>
-    <span class="comment">//    b=* (zero or more bandwidth information lines)</span>
-    <span class="comment">//    One or more time descriptions (&quot;t=&quot; and &quot;r=&quot; lines; see below)</span>
-    <span class="comment">//    z=* (time zone adjustments)</span>
-    <span class="comment">//    k=* (encryption key)</span>
-    <span class="comment">//    a=* (zero or more session attribute lines)</span>
-    <span class="comment">//    Zero or more media descriptions</span>
-    <span class="comment">//</span>
-    <span class="comment">// Time description</span>
-    <span class="comment">//    t=  (time the session is active)</span>
-    <span class="comment">//    r=* (zero or more repeat times)</span>
-    <span class="comment">//</span>
-    <span class="comment">// Media description, if present</span>
-    <span class="comment">//    m=  (media name and transport address)</span>
-    <span class="comment">//    i=* (media title)</span>
-    <span class="comment">//    c=* (connection information -- optional if included at</span>
-    <span class="comment">//         session level)</span>
-    <span class="comment">//    b=* (zero or more bandwidth information lines)</span>
-    <span class="comment">//    k=* (encryption key)</span>
-    <span class="comment">//    a=* (zero or more media attribute lines)</span>
-    <span class="comment">//</span>
-    <span class="comment">// In order to generate the following state table and draw subsequent</span>
-    <span class="comment">// deterministic finite-state automota (&quot;DFA&quot;) the following regex was used to</span>
-    <span class="comment">// derive the DFA:</span>
-    <span class="comment">//    vosi?u?e?p?c?b*(tr*)+z?k?a*(mi?c?b*k?a*)*</span>
-    <span class="comment">// possible place and state to exit:</span>
-    <span class="comment">//                    **   * * *  ** * * * *</span>
-    <span class="comment">//                    99   1 1 1  11 1 1 1 1</span>
-    <span class="comment">//                         3 1 1  26 5 5 4 4</span>
-    <span class="comment">//</span>
-    <span class="comment">// Please pay close attention to the `k`, and `a` parsing states. In the table</span>
-    <span class="comment">// below in order to distinguish between the states belonging to the media</span>
-    <span class="comment">// description as opposed to the session description, the states are marked</span>
-    <span class="comment">// with an asterisk (&quot;a*&quot;, &quot;k*&quot;).</span>
-    <span class="comment">// +--------+----+-------+----+-----+----+-----+---+----+----+---+---+-----+---+---+----+---+----+</span>
-    <span class="comment">// | STATES | a* | a*,k* | a  | a,k | b  | b,c | e | i  | m  | o | p | r,t | s | t | u  | v | z  |</span>
-    <span class="comment">// +--------+----+-------+----+-----+----+-----+---+----+----+---+---+-----+---+---+----+---+----+</span>
-    <span class="comment">// |   s1   |    |       |    |     |    |     |   |    |    |   |   |     |   |   |    | 2 |    |</span>
-    <span class="comment">// |   s2   |    |       |    |     |    |     |   |    |    | 3 |   |     |   |   |    |   |    |</span>
-    <span class="comment">// |   s3   |    |       |    |     |    |     |   |    |    |   |   |     | 4 |   |    |   |    |</span>
-    <span class="comment">// |   s4   |    |       |    |     |    |   5 | 6 |  7 |    |   | 8 |     |   | 9 | 10 |   |    |</span>
-    <span class="comment">// |   s5   |    |       |    |     |  5 |     |   |    |    |   |   |     |   | 9 |    |   |    |</span>
-    <span class="comment">// |   s6   |    |       |    |     |    |   5 |   |    |    |   | 8 |     |   | 9 |    |   |    |</span>
-    <span class="comment">// |   s7   |    |       |    |     |    |   5 | 6 |    |    |   | 8 |     |   | 9 | 10 |   |    |</span>
-    <span class="comment">// |   s8   |    |       |    |     |    |   5 |   |    |    |   |   |     |   | 9 |    |   |    |</span>
-    <span class="comment">// |   s9   |    |       |    |  11 |    |     |   |    | 12 |   |   |   9 |   |   |    |   | 13 |</span>
-    <span class="comment">// |   s10  |    |       |    |     |    |   5 | 6 |    |    |   | 8 |     |   | 9 |    |   |    |</span>
-    <span class="comment">// |   s11  |    |       | 11 |     |    |     |   |    | 12 |   |   |     |   |   |    |   |    |</span>
-    <span class="comment">// |   s12  |    |    14 |    |     |    |  15 |   | 16 | 12 |   |   |     |   |   |    |   |    |</span>
-    <span class="comment">// |   s13  |    |       |    |  11 |    |     |   |    | 12 |   |   |     |   |   |    |   |    |</span>
-    <span class="comment">// |   s14  | 14 |       |    |     |    |     |   |    | 12 |   |   |     |   |   |    |   |    |</span>
-    <span class="comment">// |   s15  |    |    14 |    |     | 15 |     |   |    | 12 |   |   |     |   |   |    |   |    |</span>
-    <span class="comment">// |   s16  |    |    14 |    |     |    |  15 |   |    | 12 |   |   |     |   |   |    |   |    |</span>
-    <span class="comment">// +--------+----+-------+----+-----+----+-----+---+----+----+---+---+-----+---+---+----+---+----+</span>
+    <span class="comment">// Unmarshal is the primary function that deserializes the session description</span>
+    <span class="comment">// message and stores it inside of a structured SessionDescription object.</span>
+    <span class="comment">//</span>
+    <span class="comment">// The States Transition Table describes the computation flow between functions</span>
+    <span class="comment">// (namely s1, s2, s3, ...) for a parsing procedure that complies with the</span>
+    <span class="comment">// specifications laid out by the rfc4566#section-5 as well as by JavaScript</span>
+    <span class="comment">// Session Establishment Protocol draft. Links:</span>
+    <span class="comment">// 		https://tools.ietf.org/html/rfc4566#section-5</span>
+    <span class="comment">// 		https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-24</span>
+    <span class="comment">//</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5</span>
+    <span class="comment">// Session description</span>
+    <span class="comment">//    v=  (protocol version)</span>
+    <span class="comment">//    o=  (originator and session identifier)</span>
+    <span class="comment">//    s=  (session name)</span>
+    <span class="comment">//    i=* (session information)</span>
+    <span class="comment">//    u=* (URI of description)</span>
+    <span class="comment">//    e=* (email address)</span>
+    <span class="comment">//    p=* (phone number)</span>
+    <span class="comment">//    c=* (connection information -- not required if included in</span>
+    <span class="comment">//         all media)</span>
+    <span class="comment">//    b=* (zero or more bandwidth information lines)</span>
+    <span class="comment">//    One or more time descriptions (&quot;t=&quot; and &quot;r=&quot; lines; see below)</span>
+    <span class="comment">//    z=* (time zone adjustments)</span>
+    <span class="comment">//    k=* (encryption key)</span>
+    <span class="comment">//    a=* (zero or more session attribute lines)</span>
+    <span class="comment">//    Zero or more media descriptions</span>
+    <span class="comment">//</span>
+    <span class="comment">// Time description</span>
+    <span class="comment">//    t=  (time the session is active)</span>
+    <span class="comment">//    r=* (zero or more repeat times)</span>
+    <span class="comment">//</span>
+    <span class="comment">// Media description, if present</span>
+    <span class="comment">//    m=  (media name and transport address)</span>
+    <span class="comment">//    i=* (media title)</span>
+    <span class="comment">//    c=* (connection information -- optional if included at</span>
+    <span class="comment">//         session level)</span>
+    <span class="comment">//    b=* (zero or more bandwidth information lines)</span>
+    <span class="comment">//    k=* (encryption key)</span>
+    <span class="comment">//    a=* (zero or more media attribute lines)</span>
+    <span class="comment">//</span>
+    <span class="comment">// In order to generate the following state table and draw subsequent</span>
+    <span class="comment">// deterministic finite-state automota (&quot;DFA&quot;) the following regex was used to</span>
+    <span class="comment">// derive the DFA:</span>
+    <span class="comment">//    vosi?u?e?p?c?b*(tr*)+z?k?a*(mi?c?b*k?a*)*</span>
+    <span class="comment">// possible place and state to exit:</span>
+    <span class="comment">//                    **   * * *  ** * * * *</span>
+    <span class="comment">//                    99   1 1 1  11 1 1 1 1</span>
+    <span class="comment">//                         3 1 1  26 5 5 4 4</span>
+    <span class="comment">//</span>
+    <span class="comment">// Please pay close attention to the `k`, and `a` parsing states. In the table</span>
+    <span class="comment">// below in order to distinguish between the states belonging to the media</span>
+    <span class="comment">// description as opposed to the session description, the states are marked</span>
+    <span class="comment">// with an asterisk (&quot;a*&quot;, &quot;k*&quot;).</span>
+    <span class="comment">// +--------+----+-------+----+-----+----+-----+---+----+----+---+---+-----+---+---+----+---+----+</span>
+    <span class="comment">// | STATES | a* | a*,k* | a  | a,k | b  | b,c | e | i  | m  | o | p | r,t | s | t | u  | v | z  |</span>
+    <span class="comment">// +--------+----+-------+----+-----+----+-----+---+----+----+---+---+-----+---+---+----+---+----+</span>
+    <span class="comment">// |   s1   |    |       |    |     |    |     |   |    |    |   |   |     |   |   |    | 2 |    |</span>
+    <span class="comment">// |   s2   |    |       |    |     |    |     |   |    |    | 3 |   |     |   |   |    |   |    |</span>
+    <span class="comment">// |   s3   |    |       |    |     |    |     |   |    |    |   |   |     | 4 |   |    |   |    |</span>
+    <span class="comment">// |   s4   |    |       |    |     |    |   5 | 6 |  7 |    |   | 8 |     |   | 9 | 10 |   |    |</span>
+    <span class="comment">// |   s5   |    |       |    |     |  5 |     |   |    |    |   |   |     |   | 9 |    |   |    |</span>
+    <span class="comment">// |   s6   |    |       |    |     |    |   5 |   |    |    |   | 8 |     |   | 9 |    |   |    |</span>
+    <span class="comment">// |   s7   |    |       |    |     |    |   5 | 6 |    |    |   | 8 |     |   | 9 | 10 |   |    |</span>
+    <span class="comment">// |   s8   |    |       |    |     |    |   5 |   |    |    |   |   |     |   | 9 |    |   |    |</span>
+    <span class="comment">// |   s9   |    |       |    |  11 |    |     |   |    | 12 |   |   |   9 |   |   |    |   | 13 |</span>
+    <span class="comment">// |   s10  |    |       |    |     |    |   5 | 6 |    |    |   | 8 |     |   | 9 |    |   |    |</span>
+    <span class="comment">// |   s11  |    |       | 11 |     |    |     |   |    | 12 |   |   |     |   |   |    |   |    |</span>
+    <span class="comment">// |   s12  |    |    14 |    |     |    |  15 |   | 16 | 12 |   |   |     |   |   |    |   |    |</span>
+    <span class="comment">// |   s13  |    |       |    |  11 |    |     |   |    | 12 |   |   |     |   |   |    |   |    |</span>
+    <span class="comment">// |   s14  | 14 |       |    |     |    |     |   |    | 12 |   |   |     |   |   |    |   |    |</span>
+    <span class="comment">// |   s15  |    |    14 |    |     | 15 |     |   |    | 12 |   |   |     |   |   |    |   |    |</span>
+    <span class="comment">// |   s16  |    |    14 |    |     |    |  15 |   |    | 12 |   |   |     |   |   |    |   |    |</span>
+    <span class="comment">// +--------+----+-------+----+-----+----+-----+---+----+----+---+---+-----+---+---+----+---+----+</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unmarshal</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">io</span>::<span class="ident">BufRead</span> <span class="op">+</span> <span class="ident">io</span>::<span class="ident">Seek</span><span class="op">&gt;</span>(<span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">R</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lexer</span> <span class="op">=</span> <span class="ident">Lexer</span> {
             <span class="ident">desc</span>: <span class="ident">SessionDescription</span> {
@@ -2156,19 +2156,19 @@
         <span class="string">&quot;a=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_attribute</span>,
         })),
-        <span class="comment">// Non-spec ordering</span>
+        <span class="comment">// Non-spec ordering</span>
         <span class="string">&quot;k=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_encryption_key</span>,
         })),
-        <span class="comment">// Non-spec ordering</span>
+        <span class="comment">// Non-spec ordering</span>
         <span class="string">&quot;b=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_bandwidth</span>,
         })),
-        <span class="comment">// Non-spec ordering</span>
+        <span class="comment">// Non-spec ordering</span>
         <span class="string">&quot;c=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_connection_information</span>,
         })),
-        <span class="comment">// Non-spec ordering</span>
+        <span class="comment">// Non-spec ordering</span>
         <span class="string">&quot;i=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_title</span>,
         })),
@@ -2200,7 +2200,7 @@
         <span class="string">&quot;c=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_connection_information</span>,
         })),
-        <span class="comment">// Non-spec ordering</span>
+        <span class="comment">// Non-spec ordering</span>
         <span class="string">&quot;i=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_title</span>,
         })),
@@ -2232,7 +2232,7 @@
         <span class="string">&quot;b=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_bandwidth</span>,
         })),
-        <span class="comment">// Non-spec ordering</span>
+        <span class="comment">// Non-spec ordering</span>
         <span class="string">&quot;i=&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">StateFn</span> {
             <span class="ident">f</span>: <span class="ident">unmarshal_media_title</span>,
         })),
@@ -2250,8 +2250,8 @@
 
     <span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 
-    <span class="comment">// As off the latest draft of the rfc this value is required to be 0.</span>
-    <span class="comment">// https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-24#section-5.8.1</span>
+    <span class="comment">// As off the latest draft of the rfc this value is required to be 0.</span>
+    <span class="comment">// https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-24#section-5.8.1</span>
     <span class="kw">if</span> <span class="ident">version</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid value `{}`&quot;</span>, <span class="ident">value</span>)));
     }
@@ -2272,21 +2272,21 @@
     <span class="kw">let</span> <span class="ident">session_id</span> <span class="op">=</span> <span class="ident">fields</span>[<span class="number">1</span>].<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">session_version</span> <span class="op">=</span> <span class="ident">fields</span>[<span class="number">2</span>].<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 
-    <span class="comment">// Set according to currently registered with IANA</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-8.2.6</span>
+    <span class="comment">// Set according to currently registered with IANA</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-8.2.6</span>
     <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">index_of</span>(<span class="ident">fields</span>[<span class="number">3</span>], <span class="kw-2">&amp;</span>[<span class="string">&quot;IN&quot;</span>]);
     <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid value `{}`&quot;</span>, <span class="ident">fields</span>[<span class="number">3</span>])));
     }
 
-    <span class="comment">// Set according to currently registered with IANA</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-8.2.7</span>
+    <span class="comment">// Set according to currently registered with IANA</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-8.2.7</span>
     <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">index_of</span>(<span class="ident">fields</span>[<span class="number">4</span>], <span class="kw-2">&amp;</span>[<span class="string">&quot;IP4&quot;</span>, <span class="string">&quot;IP6&quot;</span>]);
     <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid value `{}`&quot;</span>, <span class="ident">fields</span>[<span class="number">4</span>])));
     }
 
-    <span class="comment">// TODO validated UnicastAddress</span>
+    <span class="comment">// TODO validated UnicastAddress</span>
 
     <span class="ident">lexer</span>.<span class="ident">desc</span>.<span class="ident">origin</span> <span class="op">=</span> <span class="ident">Origin</span> {
         <span class="ident">username</span>: <span class="ident">fields</span>[<span class="number">0</span>].<span class="ident">to_owned</span>(),
@@ -2354,15 +2354,15 @@
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid syntax `c={}`&quot;</span>, <span class="ident">value</span>)));
     }
 
-    <span class="comment">// Set according to currently registered with IANA</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-8.2.6</span>
+    <span class="comment">// Set according to currently registered with IANA</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-8.2.6</span>
     <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">index_of</span>(<span class="ident">fields</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span>[<span class="string">&quot;IN&quot;</span>]);
     <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid value `{}`&quot;</span>, <span class="ident">fields</span>[<span class="number">0</span>])));
     }
 
-    <span class="comment">// Set according to currently registered with IANA</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-8.2.7</span>
+    <span class="comment">// Set according to currently registered with IANA</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-8.2.7</span>
     <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">index_of</span>(<span class="ident">fields</span>[<span class="number">1</span>], <span class="kw-2">&amp;</span>[<span class="string">&quot;IP4&quot;</span>, <span class="string">&quot;IP6&quot;</span>]);
     <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid value `{}`&quot;</span>, <span class="ident">fields</span>[<span class="number">1</span>])));
@@ -2403,8 +2403,8 @@
     <span class="kw">if</span> <span class="ident">experimental</span> {
         <span class="ident">parts</span>[<span class="number">0</span>] <span class="op">=</span> <span class="ident">parts</span>[<span class="number">0</span>].<span class="ident">trim_start_matches</span>(<span class="string">&quot;X-&quot;</span>);
     } <span class="kw">else</span> {
-        <span class="comment">// Set according to currently registered with IANA</span>
-        <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.8</span>
+        <span class="comment">// Set according to currently registered with IANA</span>
+        <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.8</span>
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">index_of</span>(<span class="ident">parts</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span>[<span class="string">&quot;CT&quot;</span>, <span class="string">&quot;AS&quot;</span>]);
         <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid value `{}`&quot;</span>, <span class="ident">parts</span>[<span class="number">0</span>])));
@@ -2479,9 +2479,9 @@
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StateFn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
     <span class="kw">let</span> (<span class="ident">value</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">read_value</span>(<span class="ident">lexer</span>.<span class="ident">reader</span>)<span class="question-mark">?</span>;
 
-    <span class="comment">// These fields are transimitted in pairs</span>
-    <span class="comment">// z=&lt;adjustment time&gt; &lt;offset&gt; &lt;adjustment time&gt; &lt;offset&gt; ....</span>
-    <span class="comment">// so we are making sure that there are actually multiple of 2 total.</span>
+    <span class="comment">// These fields are transimitted in pairs</span>
+    <span class="comment">// z=&lt;adjustment time&gt; &lt;offset&gt; &lt;adjustment time&gt; &lt;offset&gt; ....</span>
+    <span class="comment">// so we are making sure that there are actually multiple of 2 total.</span>
     <span class="kw">let</span> <span class="ident">fields</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">split_whitespace</span>().<span class="ident">collect</span>();
     <span class="kw">if</span> <span class="ident">fields</span>.<span class="ident">len</span>() <span class="op">%</span> <span class="number">2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid syntax `t={}`&quot;</span>, <span class="ident">value</span>)));
@@ -2540,9 +2540,9 @@
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid syntax `m={}`&quot;</span>, <span class="ident">value</span>)));
     }
 
-    <span class="comment">// &lt;media&gt;</span>
-    <span class="comment">// Set according to currently registered with IANA</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
+    <span class="comment">// &lt;media&gt;</span>
+    <span class="comment">// Set according to currently registered with IANA</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
     <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">index_of</span>(
         <span class="ident">fields</span>[<span class="number">0</span>],
         <span class="kw-2">&amp;</span>[<span class="string">&quot;audio&quot;</span>, <span class="string">&quot;video&quot;</span>, <span class="string">&quot;text&quot;</span>, <span class="string">&quot;application&quot;</span>, <span class="string">&quot;message&quot;</span>],
@@ -2551,7 +2551,7 @@
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;sdp: invalid value `{}`&quot;</span>, <span class="ident">fields</span>[<span class="number">0</span>])));
     }
 
-    <span class="comment">// &lt;port&gt;</span>
+    <span class="comment">// &lt;port&gt;</span>
     <span class="kw">let</span> <span class="ident">parts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">fields</span>[<span class="number">1</span>].<span class="ident">split</span>(<span class="string">&#39;/&#39;</span>).<span class="ident">collect</span>();
     <span class="kw">let</span> <span class="ident">port_value</span> <span class="op">=</span> <span class="ident">parts</span>[<span class="number">0</span>].<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>()<span class="question-mark">?</span> <span class="kw">as</span> <span class="ident">isize</span>;
     <span class="kw">let</span> <span class="ident">port_range</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">parts</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1</span> {
@@ -2560,9 +2560,9 @@
         <span class="prelude-val">None</span>
     };
 
-    <span class="comment">// &lt;proto&gt;</span>
-    <span class="comment">// Set according to currently registered with IANA</span>
-    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
+    <span class="comment">// &lt;proto&gt;</span>
+    <span class="comment">// Set according to currently registered with IANA</span>
+    <span class="comment">// https://tools.ietf.org/html/rfc4566#section-5.14</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">protos</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
     <span class="kw">for</span> <span class="ident">proto</span> <span class="kw">in</span> <span class="ident">fields</span>[<span class="number">2</span>].<span class="ident">split</span>(<span class="string">&#39;/&#39;</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>() {
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">index_of</span>(
@@ -2577,7 +2577,7 @@
         <span class="ident">protos</span>.<span class="ident">push</span>(<span class="ident">proto</span>.<span class="ident">to_owned</span>());
     }
 
-    <span class="comment">// &lt;fmt&gt;...</span>
+    <span class="comment">// &lt;fmt&gt;...</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">formats</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
     <span class="kw">for</span> <span class="ident">field</span> <span class="kw">in</span> <span class="ident">fields</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="number">3</span>) {
         <span class="ident">formats</span>.<span class="ident">push</span>(<span class="ident">field</span>.<span class="ident">to_string</span>());
@@ -2683,12 +2683,12 @@
 }
 
 <span class="kw">fn</span> <span class="ident">parse_time_units</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i64</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-    <span class="comment">// Some time offsets in the protocol can be provided with a shorthand</span>
-    <span class="comment">// notation. This code ensures to convert it to NTP timestamp format.</span>
-    <span class="comment">//      d - days (86400 seconds)</span>
-    <span class="comment">//      h - hours (3600 seconds)</span>
-    <span class="comment">//      m - minutes (60 seconds)</span>
-    <span class="comment">//      s - seconds (allowed for completeness)</span>
+    <span class="comment">// Some time offsets in the protocol can be provided with a shorthand</span>
+    <span class="comment">// notation. This code ensures to convert it to NTP timestamp format.</span>
+    <span class="comment">//      d - days (86400 seconds)</span>
+    <span class="comment">//      h - hours (3600 seconds)</span>
+    <span class="comment">//      m - minutes (60 seconds)</span>
+    <span class="comment">//      s - seconds (allowed for completeness)</span>
     <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">as_bytes</span>();
     <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">val</span>.<span class="ident">len</span>();
     <span class="kw">let</span> <span class="ident">num</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">val</span>[<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span>] {
