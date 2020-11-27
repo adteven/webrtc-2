@@ -962,6 +962,10 @@
 <span id="959">959</span>
 <span id="960">960</span>
 <span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cipher_suite</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">config</span>::<span class="kw-2">*</span>;
@@ -1390,10 +1394,10 @@
                     )
                     .<span class="ident">await</span>;
 
-                <span class="kw">let</span> <span class="ident">raw_handshake_packets</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process_handshake_packet</span>(<span class="ident">p</span>, <span class="ident">h</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">raw_handshake_packets</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process_handshake_packet</span>(<span class="ident">p</span>, <span class="ident">h</span>).<span class="ident">await</span><span class="question-mark">?</span>;
                 <span class="ident">raw_packets</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">raw_handshake_packets</span>);
             } <span class="kw">else</span> {
-                <span class="kw">let</span> <span class="ident">raw_packet</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process_packet</span>(<span class="ident">p</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">raw_packet</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process_packet</span>(<span class="ident">p</span>).<span class="ident">await</span><span class="question-mark">?</span>;
                 <span class="ident">raw_packets</span>.<span class="ident">push</span>(<span class="ident">raw_packet</span>);
             }
         }
@@ -1411,7 +1415,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">process_packet</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Packet</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">process_packet</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Packet</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">epoch</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">record</span>.<span class="ident">record_layer_header</span>.<span class="ident">epoch</span> <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">while</span> <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">local_sequence_number</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">epoch</span> {
             <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">local_sequence_number</span>.<span class="ident">push</span>(<span class="number">0</span>);
@@ -1435,14 +1439,16 @@
 
         <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">should_encrypt</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-                <span class="ident">raw_packet</span> <span class="op">=</span> <span class="ident">cipher_suite</span>.<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">record</span>.<span class="ident">record_layer_header</span>, <span class="kw-2">&amp;</span><span class="ident">raw_packet</span>)<span class="question-mark">?</span>;
+                <span class="ident">raw_packet</span> <span class="op">=</span> <span class="ident">cipher_suite</span>
+                    .<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">record</span>.<span class="ident">record_layer_header</span>, <span class="kw-2">&amp;</span><span class="ident">raw_packet</span>)
+                    .<span class="ident">await</span><span class="question-mark">?</span>;
             }
         }
 
         <span class="prelude-val">Ok</span>(<span class="ident">raw_packet</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">process_handshake_packet</span>(
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">process_handshake_packet</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">Packet</span>,
         <span class="ident">h</span>: <span class="kw-2">&amp;</span><span class="ident">Handshake</span>,
@@ -1485,7 +1491,9 @@
             <span class="ident">raw_packet</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">handshake_fragment</span>);
             <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">should_encrypt</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-                    <span class="ident">raw_packet</span> <span class="op">=</span> <span class="ident">cipher_suite</span>.<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="ident">record_layer_header</span>, <span class="kw-2">&amp;</span><span class="ident">raw_packet</span>)<span class="question-mark">?</span>;
+                    <span class="ident">raw_packet</span> <span class="op">=</span> <span class="ident">cipher_suite</span>
+                        .<span class="ident">encrypt</span>(<span class="kw-2">&amp;</span><span class="ident">record_layer_header</span>, <span class="kw-2">&amp;</span><span class="ident">raw_packet</span>)
+                        .<span class="ident">await</span><span class="question-mark">?</span>;
                 }
             }
 
@@ -1693,7 +1701,7 @@
             <span class="kw">let</span> <span class="ident">invalid_cipher_suite</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">cipher_suite</span>.<span class="ident">is_none</span>() {
                 <span class="bool-val">true</span>
             } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-                <span class="op">!</span><span class="ident">cipher_suite</span>.<span class="ident">is_initialized</span>()
+                <span class="op">!</span><span class="ident">cipher_suite</span>.<span class="ident">is_initialized</span>().<span class="ident">await</span>
             } <span class="kw">else</span> {
                 <span class="bool-val">false</span>
             };
@@ -1708,7 +1716,7 @@
             }
 
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-                <span class="ident">buf</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">cipher_suite</span>.<span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>) {
+                <span class="ident">buf</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">cipher_suite</span>.<span class="ident">decrypt</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>).<span class="ident">await</span> {
                     <span class="prelude-val">Ok</span>(<span class="ident">buf</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">buf</span>,
                     <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="macro">debug</span><span class="macro">!</span>(
@@ -1801,7 +1809,7 @@
                 <span class="kw">let</span> <span class="ident">invalid_cipher_suite</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">cipher_suite</span>.<span class="ident">is_none</span>() {
                     <span class="bool-val">true</span>
                 } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cipher_suite</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">state</span>.<span class="ident">cipher_suite</span> {
-                    <span class="op">!</span><span class="ident">cipher_suite</span>.<span class="ident">is_initialized</span>()
+                    <span class="op">!</span><span class="ident">cipher_suite</span>.<span class="ident">is_initialized</span>().<span class="ident">await</span>
                 } <span class="kw">else</span> {
                     <span class="bool-val">false</span>
                 };
